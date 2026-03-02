@@ -2,8 +2,13 @@
 
 import { useState } from "react"
 import { CheckCircle2, Circle } from "lucide-react"
+import type { FormData } from "@/app/page"
 
-export function InsuranceForm() {
+interface InsuranceFormProps {
+  onSubmit: (data: FormData) => void
+}
+
+export function InsuranceForm({ onSubmit }: InsuranceFormProps) {
   const [birthDate, setBirthDate] = useState("")
   const [gender, setGender] = useState<"male" | "female">("male")
   const [period, setPeriod] = useState("")
@@ -12,6 +17,10 @@ export function InsuranceForm() {
   const handleBirthDateChange = (value: string) => {
     const numeric = value.replace(/\D/g, "").slice(0, 6)
     setBirthDate(numeric)
+  }
+
+  const handleSubmit = () => {
+    onSubmit({ birthDate, gender, period, customRequest })
   }
 
   return (
@@ -125,6 +134,7 @@ export function InsuranceForm() {
         {/* CTA Button */}
         <button
           type="button"
+          onClick={handleSubmit}
           className="mt-6 flex h-14 w-full items-center justify-center rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: "#111111" }}
         >
