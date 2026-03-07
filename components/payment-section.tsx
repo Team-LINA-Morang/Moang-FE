@@ -1,7 +1,26 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, CreditCard, Shield, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, CreditCard, Shield, CheckCircle2, Building2 } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const banks = [
+  { value: "kb", label: "국민은행" },
+  { value: "shinhan", label: "신한은행" },
+  { value: "woori", label: "우리은행" },
+  { value: "hana", label: "하나은행" },
+  { value: "nh", label: "농협은행" },
+  { value: "toss", label: "토스뱅크" },
+  { value: "kakao", label: "카카오뱅크" },
+  { value: "ibk", label: "기업은행" },
+  { value: "sc", label: "SC제일은행" },
+]
 
 interface PaymentSectionProps {
   onComplete: () => void
@@ -9,6 +28,7 @@ interface PaymentSectionProps {
 }
 
 export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
+  const [selectedBank, setSelectedBank] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
@@ -19,7 +39,7 @@ export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
   }
 
   const handlePayment = () => {
-    if (accountNumber.length < 10) return
+    if (!selectedBank || accountNumber.length < 10) return
     
     setIsProcessing(true)
     setTimeout(() => {
@@ -61,17 +81,17 @@ export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
   }
 
   return (
-    <section className="mx-auto w-full max-w-4xl px-4 py-10">
+    <section className="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
       <button
         type="button"
         onClick={onBack}
-        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
         {"돌아가기"}
       </button>
 
-      <div className="rounded-xl bg-card p-8 shadow-sm" style={{ border: "1px solid #e5e5e5" }}>
+      <div className="rounded-xl bg-card p-5 shadow-sm sm:p-8" style={{ border: "1px solid #e5e5e5" }}>
         {/* Success Message */}
         <div
           className="mb-8 flex items-center gap-3 rounded-xl p-4"
@@ -123,23 +143,46 @@ export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
             </div>
           </div>
 
+          {/* Bank Selection */}
+          <div className="mb-4 flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">
+              {"은행 선택"}
+            </label>
+            <Select value={selectedBank} onValueChange={setSelectedBank}>
+              <SelectTrigger className="h-12 w-full rounded-lg border border-border bg-card px-4 text-base font-medium">
+                <div className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <SelectValue placeholder="은행을 선택해주세요" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {banks.map((bank) => (
+                  <SelectItem 
+                    key={bank.value} 
+                    value={bank.value}
+                    className="h-11 text-sm"
+                  >
+                    {bank.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Account Input */}
           <div className="flex flex-col gap-1.5">
             <label htmlFor="account" className="text-xs font-medium text-muted-foreground">
-              {"계좌번호 (숫자만 입력)"}
+              {"계좌번호"}
             </label>
             <input
               id="account"
               type="text"
               inputMode="numeric"
-              placeholder="계좌번호를 입력해 주세요"
+              placeholder="계좌번호를 '-' 없이 입력해주세요"
               value={accountNumber}
               onChange={(e) => handleAccountChange(e.target.value)}
               className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
             />
-            <p className="text-xs text-muted-foreground">
-              {"결제 가능 은행: 국민, 신한, 우리, 하나, 농협"}
-            </p>
           </div>
         </div>
 
@@ -147,7 +190,7 @@ export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
         <button
           type="button"
           onClick={handlePayment}
-          disabled={accountNumber.length < 10 || isProcessing}
+          disabled={!selectedBank || accountNumber.length < 10 || isProcessing}
           className="flex h-14 w-full items-center justify-center rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           style={{ backgroundColor: "#1a1a6e" }}
         >

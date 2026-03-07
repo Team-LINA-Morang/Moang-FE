@@ -95,17 +95,17 @@ export function ComplianceQuiz({ onComplete, onBack }: ComplianceQuizProps) {
   }
 
   return (
-    <section className="mx-auto w-full max-w-4xl px-4 py-10">
+    <section className="mx-auto w-full max-w-4xl px-4 py-6 sm:py-10">
       <button
         type="button"
         onClick={onBack}
-        className="mb-6 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-4 flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground sm:mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
         {"돌아가기"}
       </button>
 
-      <div className="rounded-xl bg-card p-8 shadow-sm" style={{ border: "1px solid #e5e5e5" }}>
+      <div className="rounded-xl bg-card p-5 shadow-sm sm:p-8" style={{ border: "1px solid #e5e5e5" }}>
         <div className="mb-6">
           <h2 className="text-lg font-bold text-foreground">
             {"보험 가입 적정성 확인 퀴즈"}
@@ -119,22 +119,22 @@ export function ComplianceQuiz({ onComplete, onBack }: ComplianceQuizProps) {
           {QUIZ_ITEMS.map((item, index) => (
             <div
               key={item.id}
-              className="rounded-xl border border-border p-5 transition-colors"
+              className="rounded-xl border border-border p-4 transition-colors sm:p-5"
               style={{
                 borderColor: answers[item.id] !== undefined && answers[item.id] !== null ? "#1a1a6e" : undefined,
               }}
             >
-              <p className="mb-4 text-sm font-medium text-foreground">
+              <p className="mb-3 text-sm font-medium text-foreground sm:mb-4">
                 <span className="mr-2 font-bold" style={{ color: "#1a1a6e" }}>
                   {`Q${index + 1}.`}
                 </span>
                 {item.question}
               </p>
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => handleAnswer(item.id, true)}
-                  className={`flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition-all ${
+                  className={`flex h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border text-sm font-semibold transition-all sm:h-11 sm:gap-2 ${
                     answers[item.id] === true
                       ? "border-[#1a1a6e] bg-[#1a1a6e] text-white"
                       : "border-border bg-card text-foreground hover:bg-muted/50"
@@ -146,7 +146,7 @@ export function ComplianceQuiz({ onComplete, onBack }: ComplianceQuizProps) {
                 <button
                   type="button"
                   onClick={() => handleAnswer(item.id, false)}
-                  className={`flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition-all ${
+                  className={`flex h-10 flex-1 items-center justify-center gap-1.5 rounded-lg border text-sm font-semibold transition-all sm:h-11 sm:gap-2 ${
                     answers[item.id] === false
                       ? "border-destructive bg-destructive text-white"
                       : "border-border bg-card text-foreground hover:bg-muted/50"
