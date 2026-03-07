@@ -1,15 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { CheckCircle2, Shield, ArrowLeft, Clock } from "lucide-react"
-import type { FormData } from "@/app/page"
+import { CheckCircle2, Shield, ArrowLeft, Clock, FileCheck } from "lucide-react"
+import type { UserFormData } from "@/components/input-form"
 import { InsuranceCard } from "@/components/insurance-card"
 import { CoverageModules } from "@/components/coverage-modules"
 import { PersonalizedGuide } from "@/components/personalized-guide"
 
 interface InsuranceResultProps {
-  formData: FormData
+  formData: UserFormData
   onBack: () => void
+  onApply: () => void
 }
 
 const LOADING_STEPS = [
@@ -18,7 +19,7 @@ const LOADING_STEPS = [
   "최적 보장 모듈 조립 중...",
 ]
 
-export function InsuranceResult({ formData, onBack }: InsuranceResultProps) {
+export function InsuranceResult({ formData, onBack, onApply }: InsuranceResultProps) {
   const [loadingStep, setLoadingStep] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -132,10 +133,21 @@ export function InsuranceResult({ formData, onBack }: InsuranceResultProps) {
         <CoverageModules />
         <PersonalizedGuide formData={formData} />
 
+        {/* Apply Button */}
+        <button
+          type="button"
+          onClick={onApply}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl text-base font-bold text-white transition-all hover:opacity-90"
+          style={{ backgroundColor: "#d4a843" }}
+        >
+          <FileCheck className="h-5 w-5" />
+          {"청약 신청하기"}
+        </button>
+
         {/* Timestamp */}
         <div className="flex items-center justify-center gap-1.5 pb-4 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />
-          <span>{"데이터 업데이트: 2026.03.02 14:30 KST"}</span>
+          <span>{"데이터 업데이트: 2026.03.07 14:30 KST"}</span>
         </div>
       </div>
     </section>
