@@ -241,6 +241,17 @@ export function ModuleBuilder({ persona, onTotalChange }: ModuleBuilderProps) {
                               {module.details.exclusions}
                             </p>
                           </div>
+                          <div>
+                            <div className="mb-1 flex items-center gap-1.5">
+                              <FileText className="h-3.5 w-3.5" style={{ color: "#d4a843" }} />
+                              <span className="text-xs font-semibold" style={{ color: "#d4a843" }}>
+                                {"청구 서류"}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed text-muted-foreground">
+                              {module.details.claimDocs}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
