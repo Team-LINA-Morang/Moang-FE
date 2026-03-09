@@ -2,15 +2,19 @@
 
 import { useState, useEffect } from "react"
 import { CheckCircle2, Shield, ArrowLeft, Clock, FileCheck } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import type { UserFormData } from "@/components/input-form"
 import { InsuranceCard } from "@/components/insurance-card"
 import { CoverageModules } from "@/components/coverage-modules"
 import { PersonalizedGuide } from "@/components/personalized-guide"
+import { AnimalAnalysis } from "@/components/animal-analysis"
+import type { PersonaData } from "@/lib/persona-data"
 
 interface InsuranceResultProps {
   formData: UserFormData
   onBack: () => void
   onApply: () => void
+  persona?: PersonaData | null
 }
 
 const LOADING_STEPS = [
@@ -19,20 +23,26 @@ const LOADING_STEPS = [
   "최적 보장 모듈 조립 중...",
 ]
 
-export function InsuranceResult({ formData, onBack, onApply }: InsuranceResultProps) {
+export function InsuranceResult({ formData, onBack, onApply, persona }: InsuranceResultProps) {
   const [loadingStep, setLoadingStep] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Reset loading state when persona changes
+    setLoadingStep(0)
+    setIsLoading(true)
+  }, [persona?.id])
 
   useEffect(() => {
     if (loadingStep < LOADING_STEPS.length) {
       const timer = setTimeout(() => {
         setLoadingStep((prev) => prev + 1)
-      }, 1200)
+      }, 800)
       return () => clearTimeout(timer)
     } else {
       const timer = setTimeout(() => {
         setIsLoading(false)
-      }, 600)
+      }, 400)
       return () => clearTimeout(timer)
     }
   }, [loadingStep])
@@ -61,7 +71,7 @@ export function InsuranceResult({ formData, onBack, onApply }: InsuranceResultPr
               {"AI가 맞춤 보험을 조립하고 있습니다"}
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              {"요청하신 내용을 분석하여 최적의 보장 모듈을 구성합니다"}
+              {persona ? `${persona.name}님의 SNS를 분석하여 최적의 보장 모듈을 구성합니다` : "요청하신 내용을 분석하여 최적의 보장 모듈을 구성합니다"}
             </p>
           </div>
 
@@ -128,28 +138,42 @@ export function InsuranceResult({ formData, onBack, onApply }: InsuranceResultPr
         {"다시 입력하기"}
       </button>
 
-      <div className="flex flex-col gap-6">
-        <InsuranceCard />
-        <CoverageModules />
-        <PersonalizedGuide formData={formData} />
-
-        {/* Apply Button */}
-        <button
-          type="button"
-          onClick={onApply}
-          className="flex h-14 w-full items-center justify-center gap-2 rounded-xl text-base font-bold text-white transition-all hover:opacity-90"
-          style={{ backgroundColor: "#d4a843" }}
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key={persona?.id || "default"}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col gap-6"
         >
-          <FileCheck className="h-5 w-5" />
-          {"청약 신청하기"}
-        </button>
+          <InsuranceCard persona={persona} />
+          <CoverageModules persona={persona} />
+          <PersonalizedGuide formData={formData} persona={persona} />
+          
+          {/* Animal Analysis Section - Only show for SNS path with persona */}
+          {formData.path === "sns" && persona && (
+            <AnimalAnalysis persona={persona} />
+          )}
 
-        {/* Timestamp */}
-        <div className="flex items-center justify-center gap-1.5 pb-4 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          <span>{"데이터 업데이트: 2026.03.07 14:30 KST"}</span>
-        </div>
-      </div>
+          {/* Apply Button */}
+          <button
+            type="button"
+            onClick={onApply}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-xl text-base font-bold text-white transition-all hover:opacity-90"
+            style={{ backgroundColor: "#d4a843" }}
+          >
+            <FileCheck className="h-5 w-5" />
+            {"청약 신청하기"}
+          </button>
+
+          {/* Timestamp */}
+          <div className="flex items-center justify-center gap-1.5 pb-4 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>{"데이터 업데이트: 2026.03.10 14:30 KST"}</span>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </section>
   )
 }

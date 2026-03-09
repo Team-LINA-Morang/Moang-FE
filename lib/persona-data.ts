@@ -28,6 +28,8 @@ export interface PersonaData {
   id: string
   name: string
   category: string
+  activityType: string
+  productName: string
   coverages: CoverageModule[]
   animal: AnimalAnalysis
   product: InsuranceProduct
@@ -39,6 +41,8 @@ export const PERSONAS: PersonaData[] = [
     id: "bong-jaewoo",
     name: "봉재우",
     category: "도시 여행자/자전거",
+    activityType: "도심 자전거 라이딩",
+    productName: "[AI 맞춤] 도시 탐험가 안심 보험",
     coverages: [
       {
         name: "해외상해",
@@ -80,6 +84,8 @@ export const PERSONAS: PersonaData[] = [
     id: "han-jaewon",
     name: "한재원",
     category: "고위험 레저/스키",
+    activityType: "스키/스노보드",
+    productName: "[AI 맞춤] 익스트림 레저 안심 보험",
     coverages: [
       {
         name: "레저상해",
@@ -121,6 +127,8 @@ export const PERSONAS: PersonaData[] = [
     id: "hyun-minseo",
     name: "현민서",
     category: "전문 등산/아웃도어",
+    activityType: "고산 등반",
+    productName: "[AI 맞춤] 고산 등반 전문 보험",
     coverages: [
       {
         name: "고산등반상해",
@@ -162,6 +170,8 @@ export const PERSONAS: PersonaData[] = [
     id: "kim-gyuri",
     name: "김규리",
     category: "드라이빙/감성여행",
+    activityType: "드라이브 여행",
+    productName: "[AI 맞춤] 감성 드라이버 안심 보험",
     coverages: [
       {
         name: "교통사고처리지원",
@@ -203,6 +213,8 @@ export const PERSONAS: PersonaData[] = [
     id: "yoon-sohee",
     name: "윤소희",
     category: "페스티벌/소셜",
+    activityType: "페스티벌/대규모 행사",
+    productName: "[AI 맞춤] 페스티벌 러버 안심 보험",
     coverages: [
       {
         name: "군중밀집사고",
@@ -244,6 +256,8 @@ export const PERSONAS: PersonaData[] = [
     id: "park-yena",
     name: "박예나",
     category: "국내여행/체험",
+    activityType: "국내 여행/체험 활동",
+    productName: "[AI 맞춤] 국내여행 체험 안심 보험",
     coverages: [
       {
         name: "국내여행상해",
@@ -285,6 +299,8 @@ export const PERSONAS: PersonaData[] = [
     id: "kim-byul",
     name: "김별",
     category: "시티라이프/전시",
+    activityType: "전시 관람/시티라이프",
+    productName: "[AI 맞춤] 시티 아티스트 안심 보험",
     coverages: [
       {
         name: "전시장배상책임",
@@ -311,7 +327,7 @@ export const PERSONAS: PersonaData[] = [
       animal: "고양이",
       emoji: "🐱",
       title: "미술관을 거니는 고고한 고양이",
-      personality: "나만의 취향이 확실한 예술가! 트렌디한 전시와 독특한 공간을 찾아다니며 자신만의 감성을 채워가는 스타일이에요.",
+      personality: "나만의 취향이 확실한 예술가! 트렌디한 ��시와 독특한 공간을 찾아다니며 자신만의 감성을 채워가는 스타일이에요.",
       snsFeeds: "전시회 인증샷, 아트북 컬렉션, 감각적인 카페 인테리어, 플리마켓 탐방, 필름 카메라로 찍은 일상.",
       fact: "예술적 감성을 담은 순간들, 소중한 기기와 함께 안전하게 지키세요.",
     },
