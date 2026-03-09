@@ -5,7 +5,7 @@ import { CheckCircle2, Shield, ArrowLeft, Clock, FileCheck } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { UserFormData } from "@/components/input-form"
 import { InsuranceCard } from "@/components/insurance-card"
-import { CoverageModules } from "@/components/coverage-modules"
+import { ModuleBuilder } from "@/components/module-builder"
 import { PersonalizedGuide } from "@/components/personalized-guide"
 import { AnimalAnalysis } from "@/components/animal-analysis"
 import type { PersonaData } from "@/lib/persona-data"
@@ -26,6 +26,7 @@ const LOADING_STEPS = [
 export function InsuranceResult({ formData, onBack, onApply, persona }: InsuranceResultProps) {
   const [loadingStep, setLoadingStep] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [customTotal, setCustomTotal] = useState(0)
 
   useEffect(() => {
     // Reset loading state when persona changes
@@ -147,8 +148,11 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-6"
         >
-          <InsuranceCard persona={persona} />
-          <CoverageModules persona={persona} />
+          <InsuranceCard persona={persona} customTotal={customTotal} />
+          
+          {/* Module Builder - Replaces CoverageModules */}
+          <ModuleBuilder persona={persona} onTotalChange={setCustomTotal} />
+          
           <PersonalizedGuide formData={formData} persona={persona} />
           
           {/* Animal Analysis Section - Only show for SNS path with persona */}
