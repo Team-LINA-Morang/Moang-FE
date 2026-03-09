@@ -1,9 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { CheckCircle2, ShieldCheck, ChevronDown, FileText } from "lucide-react"
+import type { PersonaData, CoverageModule } from "@/lib/persona-data"
 
-const MODULES = [
+interface CoverageModulesProps {
+  persona?: PersonaData | null
+}
+
+const defaultModules: CoverageModule[] = [
   {
     name: "상해사망",
     amount: "5,000만원",
@@ -36,15 +42,28 @@ const MODULES = [
   },
 ]
 
-export function CoverageModules() {
+export function CoverageModules({ persona }: CoverageModulesProps) {
   const [expandedModule, setExpandedModule] = useState<string | null>(null)
+  const modules = persona?.coverages || defaultModules
+
+  // Reset expanded state when persona changes
+  useEffect(() => {
+    setExpandedModule(null)
+  }, [persona?.id])
 
   const toggleModule = (name: string) => {
     setExpandedModule(expandedModule === name ? null : name)
   }
 
   return (
-    <div className="rounded-2xl bg-card p-6 shadow-sm" style={{ border: "1px solid #e5e5e5" }}>
+    <motion.div
+      key={persona?.id || "default"}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="rounded-2xl bg-card p-5 shadow-sm sm:p-6"
+      style={{ border: "1px solid #e5e5e5" }}
+    >
       <div className="mb-5 flex items-center gap-2">
         <ShieldCheck className="h-5 w-5" style={{ color: "#1a1a6e" }} />
         <h3 className="text-base font-bold text-foreground">
@@ -53,95 +72,111 @@ export function CoverageModules() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {MODULES.map((module) => {
-          const isExpanded = expandedModule === module.name
-          return (
-            <div
-              key={module.name}
-              className="overflow-hidden rounded-xl border border-border transition-all"
-            >
-              <button
-                type="button"
-                onClick={() => toggleModule(module.name)}
-                className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/50"
+        <AnimatePresence mode="wait">
+          {modules.map((module, index) => {
+            const isExpanded = expandedModule === module.name
+            return (
+              <motion.div
+                key={`${persona?.id || "default"}-${module.name}-${index}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="overflow-hidden rounded-xl border border-border transition-all"
               >
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: "#1a1a6e" }} />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground">
-                        {module.name}
-                      </span>
-                      <span
-                        className="rounded px-1.5 py-0.5 text-[10px] font-medium text-white"
-                        style={{ backgroundColor: "#2d8a4e" }}
-                      >
-                        {"승인완료"}
-                      </span>
-                    </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
-                      {module.description}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="shrink-0 text-sm font-bold text-foreground">
-                    {module.amount}
-                  </span>
-                  <ChevronDown
-                    className={`h-4 w-4 text-muted-foreground transition-transform ${
-                      isExpanded ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {isExpanded && (
-                <div
-                  className="border-t border-border p-4"
-                  style={{ backgroundColor: "rgba(26, 26, 110, 0.02)" }}
+                <button
+                  type="button"
+                  onClick={() => toggleModule(module.name)}
+                  className="flex w-full items-center justify-between p-3 text-left transition-colors hover:bg-muted/50 sm:p-4"
                 >
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <div className="mb-1.5 flex items-center gap-1.5">
-                        <FileText className="h-3.5 w-3.5" style={{ color: "#1a1a6e" }} />
-                        <span className="text-xs font-semibold" style={{ color: "#1a1a6e" }}>
-                          {"보장 내용"}
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 shrink-0" style={{ color: "#1a1a6e" }} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground">
+                          {module.name}
+                        </span>
+                        <span
+                          className="shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium text-white"
+                          style={{ backgroundColor: "#2d8a4e" }}
+                        >
+                          {"승인완료"}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed text-foreground">
-                        {module.details.coverage}
-                      </p>
-                    </div>
-                    <div>
-                      <div className="mb-1.5 flex items-center gap-1.5">
-                        <FileText className="h-3.5 w-3.5 text-destructive" />
-                        <span className="text-xs font-semibold text-destructive">
-                          {"보장 제외 사항"}
-                        </span>
-                      </div>
-                      <p className="text-xs leading-relaxed text-foreground">
-                        {module.details.exclusions}
-                      </p>
-                    </div>
-                    <div>
-                      <div className="mb-1.5 flex items-center gap-1.5">
-                        <FileText className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          {"청구 서류"}
-                        </span>
-                      </div>
-                      <p className="text-xs leading-relaxed text-muted-foreground">
-                        {module.details.claimDocs}
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {module.description}
                       </p>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )
-        })}
+                  <div className="ml-2 flex shrink-0 items-center gap-2 sm:gap-3">
+                    <span className="text-sm font-bold text-foreground">
+                      {module.amount}
+                    </span>
+                    <ChevronDown
+                      className={`h-4 w-4 text-muted-foreground transition-transform ${
+                        isExpanded ? "rotate-180" : ""
+                      }`}
+                    />
+                  </div>
+                </button>
+
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div
+                        className="border-t border-border p-3 sm:p-4"
+                        style={{ backgroundColor: "rgba(26, 26, 110, 0.02)" }}
+                      >
+                        <div className="flex flex-col gap-4">
+                          <div>
+                            <div className="mb-1.5 flex items-center gap-1.5">
+                              <FileText className="h-3.5 w-3.5" style={{ color: "#1a1a6e" }} />
+                              <span className="text-xs font-semibold" style={{ color: "#1a1a6e" }}>
+                                {"보장 내용"}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed text-foreground">
+                              {module.details.coverage}
+                            </p>
+                          </div>
+                          <div>
+                            <div className="mb-1.5 flex items-center gap-1.5">
+                              <FileText className="h-3.5 w-3.5 text-destructive" />
+                              <span className="text-xs font-semibold text-destructive">
+                                {"보장 제외 사항"}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed text-foreground">
+                              {module.details.exclusions}
+                            </p>
+                          </div>
+                          <div>
+                            <div className="mb-1.5 flex items-center gap-1.5">
+                              <FileText className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span className="text-xs font-semibold text-muted-foreground">
+                                {"청구 서류"}
+                              </span>
+                            </div>
+                            <p className="text-xs leading-relaxed text-muted-foreground">
+                              {module.details.claimDocs}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )
+          })}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   )
 }

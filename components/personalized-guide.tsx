@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MessageSquare, FileText, X, AlertTriangle, CheckCircle2, Info } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Dialog,
   DialogContent,
@@ -9,24 +10,57 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import type { UserFormData } from "@/components/input-form"
+import type { PersonaData } from "@/lib/persona-data"
 
 interface PersonalizedGuideProps {
   formData: UserFormData
+  persona?: PersonaData | null
 }
 
-export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
+export function PersonalizedGuide({ formData, persona }: PersonalizedGuideProps) {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
-  const name = formData.name || "고객"
+  const name = persona?.name || formData.name || "고객"
 
   const getPathMessage = () => {
+    if (persona) {
+      return persona.aiAdvice
+    }
     if (formData.path === "sns") {
       return `${name}님의 SNS 피드를 분석한 결과, 액티브한 아웃도어 활동이 많으신 것으로 파악됩니다. 이에 맞춰 상해 및 골절 보장을 강화한 맞춤 보험을 설계했습니다.`
     }
     return `${name}님, 요청하신 내용을 바탕으로 위험 요율을 적용하여 가장 합리적인 보장 구성을 추천드립니다. ${formData.gender === "male" ? "남성" : "여성"} 기준으로 최적화되어 있습니다.`
   }
 
+  const getProductName = () => {
+    if (persona) {
+      return persona.productName
+    }
+    return "[AI 맞춤] 번지점프 원데이 안심 보험"
+  }
+
+  const getCoverageDescription = () => {
+    if (persona) {
+      return `피보험자가 보험기간 중 발생한 급격하고도 우연한 외래의 사고(${persona.activityType} 등)로 입은 상해를 보상합니다.`
+    }
+    return "피보험자가 보험기간 중 발생한 급격하고도 우연한 외래의 사고(번지점프 등)로 입은 상해를 보상합니다."
+  }
+
+  const getExclusionNote = () => {
+    if (persona) {
+      return `(단, 본 상품은 ${persona.activityType} 특약으로 관련 활동을 명시적으로 보장함)`
+    }
+    return "(단, 본 상품은 원데이 레저 특약으로 번지점프를 명시적으로 보장함)"
+  }
+
   return (
-    <div className="rounded-2xl bg-card p-6 shadow-sm" style={{ border: "1px solid #e5e5e5" }}>
+    <motion.div 
+      key={persona?.id || "default"}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="rounded-2xl bg-card p-6 shadow-sm" 
+      style={{ border: "1px solid #e5e5e5" }}
+    >
       {/* AI Advice */}
       <div className="flex gap-3">
         <div
@@ -39,9 +73,18 @@ export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
           <p className="mb-1 text-xs font-semibold" style={{ color: "#1a1a6e" }}>
             {"AI의 조언"}
           </p>
-          <p className="text-sm leading-relaxed text-foreground">
-            {getPathMessage()}
-          </p>
+          <AnimatePresence mode="wait">
+            <motion.p 
+              key={persona?.id || "default-msg"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="text-sm leading-relaxed text-foreground"
+            >
+              {getPathMessage()}
+            </motion.p>
+          </AnimatePresence>
         </div>
       </div>
 
@@ -78,7 +121,7 @@ export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-lg font-bold" style={{ color: "#1a1a6e" }}>
               <FileText className="h-5 w-5" />
-              {"[AI 맞춤] 번지점프 원데이 안심 보험 약관"}
+              {`${getProductName()} 약관`}
             </DialogTitle>
           </DialogHeader>
 
@@ -92,7 +135,7 @@ export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
                 </h4>
               </div>
               <p className="text-sm leading-relaxed text-foreground">
-                {"피보험자가 보험기간 중 발생한 급격하고도 우연한 외래의 사고(번지점프 등)로 입은 상해를 보상합니다."}
+                {getCoverageDescription()}
               </p>
             </div>
 
@@ -105,14 +148,14 @@ export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
                 </h4>
               </div>
               <p className="text-sm leading-relaxed text-foreground">
-                {"피보험자의 고의, 자해, 형법상 범죄행위, 전문적인 등반이나 번지점프 등을 직업적으로 하는 동안의 사고는 제외됩니다."}
+                {"피보험자의 고의, 자해, 형법상 범죄행위, 전문적인 등반이나 관련 활동을 직업적으로 하는 동안의 사고는 제외됩니다."}
               </p>
               <div 
                 className="mt-3 rounded-lg p-3"
                 style={{ backgroundColor: "rgba(212, 168, 67, 0.15)" }}
               >
                 <p className="text-xs font-medium" style={{ color: "#1a1a6e" }}>
-                  <span className="font-bold">{"(단, 본 상품은 원데이 레저 특약으로 번지점프를 명시적으로 보장함)"}</span>
+                  <span className="font-bold">{getExclusionNote()}</span>
                 </p>
               </div>
             </div>
@@ -162,6 +205,6 @@ export function PersonalizedGuide({ formData }: PersonalizedGuideProps) {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </motion.div>
   )
 }
