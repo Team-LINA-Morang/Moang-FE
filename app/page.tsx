@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Header } from "@/components/header"
 import { PathSelection } from "@/components/path-selection"
 import { InputForm, type UserFormData } from "@/components/input-form"
@@ -16,6 +16,7 @@ export default function Home() {
   const [view, setView] = useState<ViewState>("path-selection")
   const [selectedPath, setSelectedPath] = useState<"sns" | "direct" | null>(null)
   const [formData, setFormData] = useState<UserFormData | null>(null)
+  // Persona is only used for SNS path
   const [selectedPersona, setSelectedPersona] = useState<PersonaData | null>(null)
 
   const handleSelectPath = (path: "sns" | "direct") => {
@@ -57,41 +58,26 @@ export default function Home() {
     setView("result")
   }
 
+  // Persona selection only affects SNS path - does NOT auto-navigate
   const handlePersonaSelect = (personaId: string) => {
     const persona = PERSONAS.find(p => p.id === personaId) || null
     setSelectedPersona(persona)
     
-    // If persona is selected and we're at path-selection, auto-navigate through SNS path
-    if (persona && view === "path-selection") {
-      setSelectedPath("sns")
-      // Create mock form data for the persona
+    // If we're in result view with SNS path, update form data with persona info
+    if (persona && view === "result" && selectedPath === "sns" && formData) {
       setFormData({
+        ...formData,
         name: persona.name,
-        birthDate: "1995-01-01",
-        gender: "male",
-        phone: "010-1234-5678",
-        email: `${persona.id}@example.com`,
-        customRequest: "",
         snsId: persona.id,
         snsPlatform: "instagram",
-        path: "sns",
-      })
-      setView("result")
-    } else if (persona && view === "result") {
-      // Update form data with new persona
-      setFormData({
-        name: persona.name,
-        birthDate: "1995-01-01",
-        gender: "male",
-        phone: "010-1234-5678",
-        email: `${persona.id}@example.com`,
-        customRequest: "",
-        snsId: persona.id,
-        snsPlatform: "instagram",
-        path: "sns",
       })
     }
   }
+
+  // Determine which persona to use for the result
+  // - SNS path: use selectedPersona (can be null for default)
+  // - Direct path: always null (uses fixed bungee jump example)
+  const resultPersona = selectedPath === "sns" ? selectedPersona : null
 
   // Show persona selector only in path-selection and result views for SNS path
   const showPersonaSelector = view === "path-selection" || (view === "result" && selectedPath === "sns")
@@ -115,7 +101,7 @@ export default function Home() {
             formData={formData}
             onBack={handleBackToForm}
             onApply={handleApply}
-            persona={selectedPersona}
+            persona={resultPersona}
           />
         )}
         {view === "quiz" && (
@@ -132,7 +118,7 @@ export default function Home() {
         )}
       </main>
 
-      {/* Persona Selector at bottom */}
+      {/* Persona Selector at bottom - only for SNS path context */}
       {showPersonaSelector && (
         <PersonaSelector
           selectedPersonaId={selectedPersona?.id || null}
