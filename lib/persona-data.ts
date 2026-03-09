@@ -2,6 +2,7 @@ export interface CoverageModule {
   name: string
   amount: string
   description: string
+  price: number // Daily price in KRW
   details: {
     coverage: string
     exclusions: string
@@ -31,10 +32,488 @@ export interface PersonaData {
   activityType: string
   productName: string
   coverages: CoverageModule[]
+  recommendedModules: CoverageModule[]
   animal: AnimalAnalysis
   product: InsuranceProduct
   aiAdvice: string
 }
+
+// Helper function to calculate total price (separable for future backend integration)
+export function calculateTotal(modules: CoverageModule[]): number {
+  return modules.reduce((sum, module) => sum + module.price, 0)
+}
+
+// Additional recommended modules for 번지점프 (default/direct)
+export const BUNGEE_RECOMMENDED_MODULES: CoverageModule[] = [
+  {
+    name: "치아파절보장",
+    amount: "100만원",
+    description: "사고로 인한 치아 파절 시 치료비 보장",
+    price: 180,
+    details: {
+      coverage: "상해로 치아 파절 진단 시 치료비 최대 100만원 지급.",
+      exclusions: "기존 치과 질환, 충치로 인한 파절은 제외됩니다.",
+      claimDocs: "치아 진단서, 치료비 영수증, 사고 경위서",
+    },
+  },
+  {
+    name: "트라우마위로금",
+    amount: "50만원",
+    description: "사고 후 심리적 트라우마 케어 비용",
+    price: 120,
+    details: {
+      coverage: "상해 사고 후 PTSD 등 심리적 트라우마 진단 시 위로금 50만원 지급.",
+      exclusions: "기존 정신과 질환 악화, 사고와 무관한 심리적 문제는 제외됩니다.",
+      claimDocs: "정신건강의학과 진단서, 상담 기록, 사고 증명서류",
+    },
+  },
+  {
+    name: "고도공포증케어",
+    amount: "30만원",
+    description: "고도공포증 발현 시 상담/치료비 보장",
+    price: 90,
+    details: {
+      coverage: "번지점프 등 고도 활동 후 고도공포증 발현 시 상담/치료비 최대 30만원 지급.",
+      exclusions: "기존 공포증 진단자, 활동 전 발현된 증상은 제외됩니다.",
+      claimDocs: "정신건강의학과 진단서, 상담 영수증",
+    },
+  },
+  {
+    name: "긴급구조비용",
+    amount: "300만원",
+    description: "사고 시 헬기/특수 구조 비용 보장",
+    price: 280,
+    details: {
+      coverage: "레저 활동 중 사고로 헬기 또는 특수 구조가 필요한 경우 비용 최대 300만원 지급.",
+      exclusions: "고의적 위험 행위, 통제 구역 이탈 중 발생한 사고는 제외됩니다.",
+      claimDocs: "구조 비용 영수증, 구조대 출동 확인서",
+    },
+  },
+  {
+    name: "장비파손보장",
+    amount: "50만원",
+    description: "레저 장비 파손 시 수리/교체 비용",
+    price: 100,
+    details: {
+      coverage: "활동 중 개인 레저 장비 파손 시 수리비 또는 교체 비용 최대 50만원 지급.",
+      exclusions: "자연 마모, 분실/도난, 업체 제공 장비는 제외됩니다.",
+      claimDocs: "파손 사진, 구매 영수증, 수리 견적서",
+    },
+  },
+]
+
+// 봉재우 추천 모듈
+export const BONG_JAEWOO_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "전동킥보드사고",
+    amount: "2,000만원",
+    description: "전동킥보드 이용 중 상해 보장",
+    price: 320,
+    details: {
+      coverage: "전동킥보드 이용 중 발생한 상해 사고 시 가입금액 2,000만원 지급.",
+      exclusions: "음주 상태, 헬멧 미착용, 2인 탑승 중 사고는 제외됩니다.",
+      claimDocs: "진단서, 사고 경위서, 이용 기록",
+    },
+  },
+  {
+    name: "스마트폰액정파손",
+    amount: "30만원",
+    description: "스마트폰 액정 파손 시 수리비 보장",
+    price: 80,
+    details: {
+      coverage: "이동 중 스마트폰 액정 파손 시 수리비 최대 30만원 지급.",
+      exclusions: "분실/도난, 침수, 고의적 파손은 제외됩니다.",
+      claimDocs: "파손 사진, 수리 영수증, 구매 증빙",
+    },
+  },
+  {
+    name: "공유자전거배상",
+    amount: "500만원",
+    description: "공유자전거 파손/분실 시 배상 보장",
+    price: 150,
+    details: {
+      coverage: "공유자전거 이용 중 파손 또는 분실로 배상책임 발생 시 최대 500만원 지급.",
+      exclusions: "고의적 파손, 규정 외 지역 이용 중 발생한 문제는 제외됩니다.",
+      claimDocs: "배상 청구서, 이용 기록, 파손 사진",
+    },
+  },
+  {
+    name: "도심길미끄럼",
+    amount: "100만원",
+    description: "미끄러운 도로에서의 낙상 사고 보장",
+    price: 120,
+    details: {
+      coverage: "비/눈으로 미끄러운 도로에서 낙상 사고 시 치료비 최대 100만원 지급.",
+      exclusions: "음주 상태, 안전 수칙 미준수 시 발생한 사고는 제외됩니다.",
+      claimDocs: "진단서, 기상 기록, 사고 경위서",
+    },
+  },
+  {
+    name: "야간보행상해",
+    amount: "1,000만원",
+    description: "야간 보행 중 교통사고 상해 보장",
+    price: 200,
+    details: {
+      coverage: "야간(일몰 후~일출 전) 보행 중 교통사고로 상해 발생 시 가입금액 1,000만원 지급.",
+      exclusions: "무단횡단, 음주 상태에서의 보행 중 사고는 제외됩니다.",
+      claimDocs: "진단서, 교통사고 사실확인원",
+    },
+  },
+]
+
+// 한재원 추천 모듈
+export const HAN_JAEWON_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "스키장충돌배상",
+    amount: "3,000만원",
+    description: "스키장에서 타인과 충돌 시 배상 보장",
+    price: 350,
+    details: {
+      coverage: "스키장에서 타인과 충돌하여 배상책임이 발생한 경우 최대 3,000만원 지급.",
+      exclusions: "고의적 충돌, 지정 코스 이탈 중 발생한 사고는 제외됩니다.",
+      claimDocs: "배상 청구서, 사고 경위서, 리프트권 사본",
+    },
+  },
+  {
+    name: "무릎인대손상",
+    amount: "200만원",
+    description: "무릎 인대 손상 시 수술/치료비 보장",
+    price: 280,
+    details: {
+      coverage: "레저 활동 중 무릎 인대 손상(전방십자인대 등) 진단 시 수술/치료비 최대 200만원 지급.",
+      exclusions: "기존 무릎 질환 악화, 비레저 활동 중 발생한 손상은 제외됩니다.",
+      claimDocs: "MRI 판독 결과, 진단서, 수술 기록",
+    },
+  },
+  {
+    name: "고글/장비분실",
+    amount: "80만원",
+    description: "스키 고글 및 장비 분실 시 보상",
+    price: 120,
+    details: {
+      coverage: "스키장에서 고글, 장갑 등 개인 장비 분실 시 최대 80만원 보상.",
+      exclusions: "보관 부주의, 렌탈 장비 분실은 제외됩니다.",
+      claimDocs: "분실 신고서, 구매 영수증",
+    },
+  },
+  {
+    name: "저체온증진단",
+    amount: "50만원",
+    description: "저체온증 진단 시 치료비 및 위로금",
+    price: 90,
+    details: {
+      coverage: "동계 레저 활동 중 저체온증 진단 시 치료비 및 위로금 50만원 지급.",
+      exclusions: "적절한 방한 장비 미착용, 음주 상태에서의 활동은 제외됩니다.",
+      claimDocs: "진단서, 기상 기록, 리프트권 사본",
+    },
+  },
+  {
+    name: "슬로프낙상위로",
+    amount: "30만원",
+    description: "슬로프 낙상 시 위로금 지급",
+    price: 70,
+    details: {
+      coverage: "스키/보드 슬로프에서 낙상으로 치료가 필요한 경우 위로금 30만원 지급.",
+      exclusions: "음주 상태, 상급자 코스 무리한 이용 중 사고는 제외됩니다.",
+      claimDocs: "진단서, 리프트권 사본",
+    },
+  },
+]
+
+// 현민서 추천 모듈
+export const HYUN_MINSEO_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "벌쏘임/해충상해",
+    amount: "100만원",
+    description: "산행 중 벌쏘임/해충 피해 치료비",
+    price: 150,
+    details: {
+      coverage: "등산 중 벌, 진드기 등 해충에 의한 상해 발생 시 치료비 최대 100만원 지급.",
+      exclusions: "알레르기 기왕력 미고지, 방충 대비 미흡 시 발생한 피해는 제외됩니다.",
+      claimDocs: "진단서, 등산 일정 증빙",
+    },
+  },
+  {
+    name: "독사교상치료",
+    amount: "300만원",
+    description: "독사에 물렸을 때 치료비 보장",
+    price: 200,
+    details: {
+      coverage: "산행 중 독사에 물려 치료가 필요한 경우 치료비 최대 300만원 지급.",
+      exclusions: "지정 등산로 이탈, 야간 산행 중 발생한 사고는 제외됩니다.",
+      claimDocs: "진단서, 응급처치 기록, 등산 일정 증빙",
+    },
+  },
+  {
+    name: "야간산행구조",
+    amount: "400만원",
+    description: "야간 산행 중 조난 시 구조 비용",
+    price: 320,
+    details: {
+      coverage: "야간 산행 중 조난되어 구조가 필요한 경우 비용 최대 400만원 지급.",
+      exclusions: "입산 금지 시간 위반, 기상 경보 무시 중 발생한 조난은 제외됩니다.",
+      claimDocs: "구조 비용 영수증, 입산 기록",
+    },
+  },
+  {
+    name: "등산화파손",
+    amount: "40만원",
+    description: "등산화 파손 시 교체 비용 보장",
+    price: 60,
+    details: {
+      coverage: "산행 중 등산화 파손으로 교체가 필요한 경우 최대 40만원 지급.",
+      exclusions: "자연 마모, 3년 이상 사용 장비는 제외됩니다.",
+      claimDocs: "파손 사진, 구매 영수증",
+    },
+  },
+  {
+    name: "탈진/열사병케어",
+    amount: "80만원",
+    description: "탈진/열사병 발생 시 치료비 보장",
+    price: 130,
+    details: {
+      coverage: "하계 산행 중 탈진 또는 열사병 진단 시 치료비 최대 80만원 지급.",
+      exclusions: "폭염 경보 무시, 적절한 수분 섭취 미이행 시 발생한 증상은 제외됩니다.",
+      claimDocs: "진단서, 기상 기록, 등산 일정 증빙",
+    },
+  },
+]
+
+// 김규리 추천 모듈
+export const KIM_GYURI_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "주차장문콕보장",
+    amount: "50만원",
+    description: "주차 중 문콕 피해 수리비 보장",
+    price: 100,
+    details: {
+      coverage: "주차 중 타 차량에 의한 문콕 피해 발생 시 수리비 최대 50만원 지급.",
+      exclusions: "가해자 특정 가능한 경우, 자차 보험 처리 가능한 경우는 제외됩니다.",
+      claimDocs: "수리 견적서, 피해 사진, 주차 증빙",
+    },
+  },
+  {
+    name: "주행중유리파손",
+    amount: "100만원",
+    description: "주행 중 유리(전면/측면) 파손 보장",
+    price: 150,
+    details: {
+      coverage: "주행 중 돌 튀김 등으로 차량 유리 파손 시 교체비 최대 100만원 지급.",
+      exclusions: "고의적 파손, 기존 손상 확대는 제외됩니다.",
+      claimDocs: "파손 사진, 수리 영수증",
+    },
+  },
+  {
+    name: "견인서비스확장",
+    amount: "30만원",
+    description: "차량 고장 시 견인 서비스 비용",
+    price: 60,
+    details: {
+      coverage: "여행 중 차량 고장으로 견인이 필요한 경우 비용 최대 30만원 지급.",
+      exclusions: "연료 부족, 정기 점검 미이행으로 인한 고장은 제외됩니다.",
+      claimDocs: "견인 영수증, 정비 기록",
+    },
+  },
+  {
+    name: "졸음운전방지케어",
+    amount: "20만원",
+    description: "장거리 운전 시 휴게소 숙박비 지원",
+    price: 40,
+    details: {
+      coverage: "장거리(200km 이상) 운전 시 졸음 방지를 위한 휴게소/모텔 숙박비 지원 최대 20만원.",
+      exclusions: "음주 운전, 새벽(0시~5시) 의도적 주행은 제외됩니다.",
+      claimDocs: "숙박 영수증, 운행 기록",
+    },
+  },
+  {
+    name: "차량내소지품도난",
+    amount: "80만원",
+    description: "차량 내 소지품 도난 시 보상",
+    price: 120,
+    details: {
+      coverage: "차량 내 소지품 도난 피해 발생 시 최대 80만원 보상.",
+      exclusions: "차량 미잠금 시 발생한 도난, 현금/유가증권은 제외됩니다.",
+      claimDocs: "도난 신고서, 구매 영수증, 피해 사진",
+    },
+  },
+]
+
+// 윤소희 추천 모듈
+export const YOON_SOHEE_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "귀중품도난보장",
+    amount: "150만원",
+    description: "행사장 내 귀중품 도난 시 보상",
+    price: 200,
+    details: {
+      coverage: "페스티벌/행사장 내에서 귀중품(시계, 액세서리 등) 도난 시 최대 150만원 보상.",
+      exclusions: "분실, 놓고 온 경우, 현금/유가증권은 제외됩니다.",
+      claimDocs: "도난 신고서, 구매 영수증, 행사 티켓",
+    },
+  },
+  {
+    name: "청력손상보호",
+    amount: "200만원",
+    description: "대음량 노출로 인한 청력 손상 치료비",
+    price: 180,
+    details: {
+      coverage: "페스티벌 등 대음량 환경 노출 후 청력 손상 진단 시 치료비 최대 200만원 지급.",
+      exclusions: "기존 청력 질환, 귀마개 미착용 시 발생한 손상은 제외됩니다.",
+      claimDocs: "청력 검사 결과, 진단서, 행사 참가 증빙",
+    },
+  },
+  {
+    name: "페스티벌우천취소",
+    amount: "30만원",
+    description: "우천으로 페스티벌 취소 시 보상",
+    price: 70,
+    details: {
+      coverage: "기상 악화로 페스티벌이 취소되어 환불 불가 시 티켓비 최대 30만원 보상.",
+      exclusions: "부분 취소, 환불 가능한 경우는 제외됩니다.",
+      claimDocs: "티켓 구매 영수증, 취소 공지문",
+    },
+  },
+  {
+    name: "심야귀가안심",
+    amount: "10만원",
+    description: "심야 귀가 시 안전 택시비 지원",
+    price: 30,
+    details: {
+      coverage: "페스티벌 종료 후 심야(23시 이후) 귀가 시 택시비 최대 10만원 지원.",
+      exclusions: "대중교통 운행 가능 시간대, 자차 이용 시는 제외됩니다.",
+      claimDocs: "택시 영수증, 행사 티켓",
+    },
+  },
+  {
+    name: "식중독/배탈위로",
+    amount: "20만원",
+    description: "행사장 음식으로 인한 식중독 위로금",
+    price: 50,
+    details: {
+      coverage: "페스티벌 음식 섭취 후 식중독/배탈 진단 시 위로금 20만원 지급.",
+      exclusions: "기존 위장 질환, 행사장 외 음식 섭취로 인한 증상은 제외됩니다.",
+      claimDocs: "진단서, 음식점 영수증, 행사 티켓",
+    },
+  },
+]
+
+// 박예나 추천 모듈
+export const PARK_YENA_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "한복/의상파손",
+    amount: "50만원",
+    description: "체험 중 전통 의상 파손 시 배상 보장",
+    price: 80,
+    details: {
+      coverage: "한복 체험 등 전통 의상 대여 중 파손으로 배상 필요 시 최대 50만원 지급.",
+      exclusions: "고의적 파손, 대여 규정 위반은 제외됩니다.",
+      claimDocs: "배상 청구서, 파손 사진, 대여 계약서",
+    },
+  },
+  {
+    name: "지역특산물식중독",
+    amount: "40만원",
+    description: "여행지 특산물 섭취 후 식중독 보장",
+    price: 60,
+    details: {
+      coverage: "여행지 특산물/해산물 섭취 후 식중독 진단 시 치료비 최대 40만원 지급.",
+      exclusions: "유통기한 지난 식품, 개인 조리 음식은 제외됩니다.",
+      claimDocs: "진단서, 음식점 영수증, 여행 증빙",
+    },
+  },
+  {
+    name: "관광지미끄럼",
+    amount: "80만원",
+    description: "관광지 미끄러운 바닥 낙상 사고 보장",
+    price: 100,
+    details: {
+      coverage: "관광지 내 미끄러운 바닥(계단, 타일 등)에서 낙상 시 치료비 최대 80만원 지급.",
+      exclusions: "음주 상태, 출입 금지 구역 진입 중 사고는 제외됩니다.",
+      claimDocs: "진단서, 관광지 입장권, 사고 경위서",
+    },
+  },
+  {
+    name: "숙소내기물파손",
+    amount: "100만원",
+    description: "숙소 내 기물 파손 시 배상 보장",
+    price: 130,
+    details: {
+      coverage: "숙소 내 실수로 기물 파손하여 배상책임 발생 시 최대 100만원 지급.",
+      exclusions: "고의적 파손, 음주 상태에서의 파손은 제외됩니다.",
+      claimDocs: "배상 청구서, 파손 사진, 숙박 예약 확인서",
+    },
+  },
+  {
+    name: "여행지응급실",
+    amount: "30만원",
+    description: "여행 중 응급실 내원 시 추가 비용 보장",
+    price: 70,
+    details: {
+      coverage: "국내 여행 중 응급실 내원 시 교통비/간병비 등 추가 비용 최대 30만원 지급.",
+      exclusions: "거주지 인근(50km 이내) 응급실 내원은 제외됩니다.",
+      claimDocs: "응급실 기록, 숙박 예약 확인서, 교통비 영수증",
+    },
+  },
+]
+
+// 김별 추천 모듈
+export const KIM_BYUL_RECOMMENDED: CoverageModule[] = [
+  {
+    name: "작품파손배상",
+    amount: "1,000만원",
+    description: "전시품 실수 파손 시 배상 보장",
+    price: 250,
+    details: {
+      coverage: "미술관/박물관에서 실수로 전시품 파손 시 배상금 최대 1,000만원 지급.",
+      exclusions: "고의적 파손, 촬영 금지 구역 촬영 중 발생한 사고는 제외됩니다.",
+      claimDocs: "배상 청구서, 감정서, 입장권",
+    },
+  },
+  {
+    name: "디지털카메라파손",
+    amount: "150만원",
+    description: "미러리스/DSLR 카메라 파손 보장",
+    price: 200,
+    details: {
+      coverage: "휴대 중인 디지털 카메라(미러리스/DSLR) 파손 시 수리비 최대 150만원 지급.",
+      exclusions: "자연 마모, 분실/도난, 렌즈 단독 파손(본체 무관)은 제외됩니다.",
+      claimDocs: "파손 사진, 구매 영수증, 수리 견적서",
+    },
+  },
+  {
+    name: "미술관내낙상",
+    amount: "100만원",
+    description: "전시장 내 낙상 사고 치료비 보장",
+    price: 120,
+    details: {
+      coverage: "미술관/갤러리 내 계단, 경사로 등에서 낙상 시 치료비 최대 100만원 지급.",
+      exclusions: "음주 상태, 출입 금지 구역 진입 중 사고는 제외됩니다.",
+      claimDocs: "진단서, 입장권, 사고 경위서",
+    },
+  },
+  {
+    name: "전시취소보상",
+    amount: "20만원",
+    description: "예매 전시 취소 시 티켓비용 보상",
+    price: 40,
+    details: {
+      coverage: "주최측 사유로 전시가 취소되어 환불 불가 시 티켓비 최대 20만원 보상.",
+      exclusions: "개인 사정 불참, 환불 가능한 티켓은 제외됩니다.",
+      claimDocs: "티켓 구매 영수증, 취소 공지문",
+    },
+  },
+  {
+    name: "커피번짐/의류오염",
+    amount: "30만원",
+    description: "카페에서 의류 오염 시 세탁/배상 보장",
+    price: 50,
+    details: {
+      coverage: "카페 등에서 음료가 쏟아져 의류 오염 시 세탁비 또는 의류 교체비 최대 30만원 지급.",
+      exclusions: "본인 부주의, 이미 오염된 의류는 제외됩니다.",
+      claimDocs: "오염 사진, 세탁/구매 영수증",
+    },
+  },
+]
 
 export const PERSONAS: PersonaData[] = [
   {
@@ -48,6 +527,7 @@ export const PERSONAS: PersonaData[] = [
         name: "해외상해",
         amount: "3,000만원",
         description: "해외 여행 중 발생한 상해 보장",
+        price: 850,
         details: {
           coverage: "해외 체류 중 급격하고 우연한 외래의 사고로 인한 상해 발생 시 가입금액 3,000만원 지급.",
           exclusions: "피보험자의 고의, 자해, 형법상 범죄행위, 위험한 스포츠 활동 중 발생한 사고는 제외됩니다.",
@@ -58,6 +538,7 @@ export const PERSONAS: PersonaData[] = [
         name: "일상배상책임",
         amount: "1억원",
         description: "타인에게 손해를 끼쳤을 때 배상 보장",
+        price: 1000,
         details: {
           coverage: "일상생활 중 타인의 신체나 재물에 손해를 끼쳐 법률상 배상책임을 부담할 경우 최대 1억원 지급.",
           exclusions: "계약자나 피보험자의 고의, 직업활동 중 발생한 손해, 자동차 사고는 제외됩니다.",
@@ -65,6 +546,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: BONG_JAEWOO_RECOMMENDED,
     animal: {
       animal: "다람쥐",
       emoji: "🐿️",
@@ -91,6 +573,7 @@ export const PERSONAS: PersonaData[] = [
         name: "레저상해",
         amount: "5,000만원",
         description: "스키/스노보드 등 레저 활동 중 상해 보장",
+        price: 1500,
         details: {
           coverage: "스키, 스노보드 등 지정 레저 활동 중 발생한 상해 사고로 인한 치료비 및 사망 시 가입금액 5,000만원 지급.",
           exclusions: "음주 상태에서의 활동, 안전수칙 미준수, 지정 구역 외 활동 중 발생한 사고는 제외됩니다.",
@@ -101,6 +584,7 @@ export const PERSONAS: PersonaData[] = [
         name: "골절강화",
         amount: "100만원",
         description: "골절 진단 시 추가 보장금 지급",
+        price: 950,
         details: {
           coverage: "레저 활동 중 골절(치아파절 제외) 진단 시 회당 100만원 추가 지급.",
           exclusions: "기존 질환으로 인한 병적 골절, 치아 및 치조골 골절은 보장하지 않습니다.",
@@ -108,6 +592,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: HAN_JAEWON_RECOMMENDED,
     animal: {
       animal: "설표",
       emoji: "🐆",
@@ -134,6 +619,7 @@ export const PERSONAS: PersonaData[] = [
         name: "고산등반상해",
         amount: "7,000만원",
         description: "고산 등반 중 발생한 상해 보장",
+        price: 2000,
         details: {
           coverage: "해발 3,000m 이상 고산 등반 중 발생한 급격하고 우연한 외래의 사고로 인한 상해 시 가입금액 7,000만원 지급.",
           exclusions: "전문 산악인 자격으로 활동 중 발생한 사고, 등반 금지 구역 진입 시 사고는 제외됩니다.",
@@ -144,6 +630,7 @@ export const PERSONAS: PersonaData[] = [
         name: "조난수색비",
         amount: "500만원",
         description: "조난 시 수색/구조 비용 보장",
+        price: 1200,
         details: {
           coverage: "산악 활동 중 조난되어 수색/구조가 필요한 경우 실제 발생한 비용 최대 500만원 지급.",
           exclusions: "고의로 조난 상황을 만든 경우, 음주 상태에서의 활동 중 발생한 조난은 제외됩니다.",
@@ -151,6 +638,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: HYUN_MINSEO_RECOMMENDED,
     animal: {
       animal: "산양",
       emoji: "🐐",
@@ -177,6 +665,7 @@ export const PERSONAS: PersonaData[] = [
         name: "교통사고처리지원",
         amount: "2,000만원",
         description: "교통사고 발생 시 합의금/벌금 지원",
+        price: 900,
         details: {
           coverage: "자동차 운전 중 교통사고로 형사합의금 또는 벌금이 발생한 경우 최대 2,000만원 지급.",
           exclusions: "음주/무면허 운전, 뺑소니, 12대 중과실 사고(단, 피해자 합의 시 일부 보장)는 제외됩니다.",
@@ -187,6 +676,7 @@ export const PERSONAS: PersonaData[] = [
         name: "휴대품손해",
         amount: "100만원",
         description: "여행 중 소지품 분실/파손 보장",
+        price: 750,
         details: {
           coverage: "여행 중 휴대품의 도난, 분실, 파손 발생 시 실제 손해액 최대 100만원 지급.",
           exclusions: "현금, 유가증권, 콘택트렌즈, 의치 등은 보장 대상에서 제외됩니다.",
@@ -194,6 +684,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: KIM_GYURI_RECOMMENDED,
     animal: {
       animal: "백조",
       emoji: "🦢",
@@ -220,6 +711,7 @@ export const PERSONAS: PersonaData[] = [
         name: "군중밀집사고",
         amount: "3,000만원",
         description: "대규모 행사 중 압사/밀집 사고 보장",
+        price: 850,
         details: {
           coverage: "페스티벌, 콘서트 등 대규모 행사 참가 중 군중 밀집으로 인한 상해 발생 시 가입금액 3,000만원 지급.",
           exclusions: "불법 집회 참가, 통제 구역 무단 진입 중 발생한 사고는 제외됩니다.",
@@ -230,6 +722,7 @@ export const PERSONAS: PersonaData[] = [
         name: "행사취소보장",
         amount: "50만원",
         description: "예매한 행사 취소 시 티켓비용 보장",
+        price: 600,
         details: {
           coverage: "천재지변, 주최측 귀책 사유로 행사가 취소된 경우 티켓 구매 비용 최대 50만원 환급.",
           exclusions: "개인 사정으로 인한 불참, 환불 가능한 티켓은 보장 대상에서 제외됩니다.",
@@ -237,6 +730,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: YOON_SOHEE_RECOMMENDED,
     animal: {
       animal: "쿼카",
       emoji: "🐨",
@@ -263,6 +757,7 @@ export const PERSONAS: PersonaData[] = [
         name: "국내여행상해",
         amount: "2,000만원",
         description: "국내 여행 중 발생한 상해 보장",
+        price: 700,
         details: {
           coverage: "국내 여행 중 급격하고 우연한 외래의 사고로 인한 상해 발생 시 가입금액 2,000만원 지급.",
           exclusions: "거주지 반경 50km 이내 활동, 일상 통근/통학 중 발생한 사고는 제외됩니다.",
@@ -273,6 +768,7 @@ export const PERSONAS: PersonaData[] = [
         name: "식중독위로금",
         amount: "30만원",
         description: "여행 중 식중독 발생 시 위로금 지급",
+        price: 550,
         details: {
           coverage: "여행 중 식중독 진단을 받고 입원 또는 통원 치료 시 위로금 30만원 지급.",
           exclusions: "기존 위장 질환 악화, 자가 조리 음식으로 인한 식중독은 제외됩니다.",
@@ -280,6 +776,7 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: PARK_YENA_RECOMMENDED,
     animal: {
       animal: "여우",
       emoji: "🦊",
@@ -306,6 +803,7 @@ export const PERSONAS: PersonaData[] = [
         name: "전시장배상책임",
         amount: "5,000만원",
         description: "전시품 파손 시 배상책임 보장",
+        price: 1100,
         details: {
           coverage: "미술관, 박물관 등 전시장에서 실수로 전시품을 파손하여 배상책임이 발생한 경우 최대 5,000만원 지급.",
           exclusions: "고의적인 파손, 음주 상태에서의 사고, 촬영 금지 구역에서의 촬영 중 발생한 사고는 제외됩니다.",
@@ -316,6 +814,7 @@ export const PERSONAS: PersonaData[] = [
         name: "고가디지털기기파손",
         amount: "200만원",
         description: "카메라/태블릿 등 고가 기기 파손 보장",
+        price: 850,
         details: {
           coverage: "휴대 중인 카메라, 태블릿, 노트북 등 고가 디지털 기기의 파손 시 수리비 또는 대체 비용 최대 200만원 지급.",
           exclusions: "자연 마모, 소프트웨어 손상, 분실/도난은 보장 대상에서 제외됩니다.",
@@ -323,11 +822,12 @@ export const PERSONAS: PersonaData[] = [
         },
       },
     ],
+    recommendedModules: KIM_BYUL_RECOMMENDED,
     animal: {
       animal: "고양이",
       emoji: "🐱",
       title: "미술관을 거니는 고고한 고양이",
-      personality: "나만의 취향이 확실한 예술가! 트렌디한 ��시와 독특한 공간을 찾아다니며 자신만의 감성을 채워가는 스타일이에요.",
+      personality: "나만의 취향이 확실한 예술가! 트렌디한 전시와 독특한 공간을 찾아다니며 자신만의 감성을 채워가는 스타일이에요.",
       snsFeeds: "전시회 인증샷, 아트북 컬렉션, 감각적인 카페 인테리어, 플리마켓 탐방, 필름 카메라로 찍은 일상.",
       fact: "예술적 감성을 담은 순간들, 소중한 기기와 함께 안전하게 지키세요.",
     },
@@ -346,6 +846,7 @@ export const DEFAULT_DIRECT_COVERAGES: CoverageModule[] = [
     name: "상해사망",
     amount: "5,000만원",
     description: "번지점프 중 사고로 인한 사망 보장",
+    price: 500,
     details: {
       coverage: "상해 사고로 사망 시 가입금액 5,000만원 지급.",
       exclusions: "피보험자의 고의, 자해, 형법상 범죄행위, 전문적인 등반이나 번지점프 등을 직업적으로 하는 동안의 사고는 제외됩니다. (단, 본 상품은 원데이 레저 특약으로 번지점프를 명시적으로 보장함)",
@@ -356,6 +857,7 @@ export const DEFAULT_DIRECT_COVERAGES: CoverageModule[] = [
     name: "골절진단비",
     amount: "50만원",
     description: "낙상/충격으로 인한 골절 진단 시 지급",
+    price: 450,
     details: {
       coverage: "상해로 골절(치아파절 제외) 진단 시 회당 50만원 지급.",
       exclusions: "치아, 치조골의 골절 및 병적 골절(골다공증으로 인한 골절 등)은 보장하지 않습니다.",
@@ -366,6 +868,7 @@ export const DEFAULT_DIRECT_COVERAGES: CoverageModule[] = [
     name: "응급실 내원비",
     amount: "3만원",
     description: "사고 후 응급실 방문 시 실비 지급",
+    price: 300,
     details: {
       coverage: "상해로 응급실 내원하여 진료를 받은 경우 내원 1회당 3만원 지급.",
       exclusions: "단순 검진 목적의 응급실 방문, 음주 상태에서의 사고는 제외됩니다.",

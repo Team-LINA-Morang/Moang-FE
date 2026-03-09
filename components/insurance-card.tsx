@@ -6,6 +6,7 @@ import type { PersonaData, DEFAULT_DIRECT_PRODUCT } from "@/lib/persona-data"
 
 interface InsuranceCardProps {
   persona?: PersonaData | null
+  customTotal?: number
 }
 
 const defaultProduct = {
@@ -14,8 +15,9 @@ const defaultProduct = {
   price: "1,250",
 }
 
-export function InsuranceCard({ persona }: InsuranceCardProps) {
+export function InsuranceCard({ persona, customTotal }: InsuranceCardProps) {
   const product = persona?.product || defaultProduct
+  const displayPrice = customTotal ? customTotal.toLocaleString() : product.price
 
   return (
     <motion.div
@@ -90,14 +92,14 @@ export function InsuranceCard({ persona }: InsuranceCardProps) {
           </p>
           <div className="flex items-baseline gap-1">
             <motion.span
-              key={product.price}
+              key={displayPrice}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
               className="text-3xl font-extrabold tracking-tight sm:text-4xl"
               style={{ color: "#1a1a6e" }}
             >
-              {product.price}
+              {displayPrice}
             </motion.span>
             <span
               className="text-lg font-bold"

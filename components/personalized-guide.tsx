@@ -85,6 +85,17 @@ export function PersonalizedGuide({ formData, persona }: PersonalizedGuideProps)
               {getPathMessage()}
             </motion.p>
           </AnimatePresence>
+          
+          {/* Builder Guidance */}
+          <div 
+            className="mt-3 flex items-center gap-2 rounded-lg p-2.5"
+            style={{ backgroundColor: "rgba(212, 168, 67, 0.1)" }}
+          >
+            <span className="text-xs" style={{ color: "#d4a843" }}>{"💡"}</span>
+            <p className="text-xs font-medium" style={{ color: "#1a1a6e" }}>
+              {"모듈을 직접 선택하여 고객님만의 보험을 완성해보세요!"}
+            </p>
+          </div>
         </div>
       </div>
 
