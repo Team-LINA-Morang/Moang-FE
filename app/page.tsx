@@ -8,6 +8,7 @@ import { InsuranceResult } from "@/components/insurance-result"
 import { ComplianceQuiz } from "@/components/compliance-quiz"
 import { PaymentSection } from "@/components/payment-section"
 import { PersonaSelector } from "@/components/persona-selector"
+import { AnimalPersonaModal } from "@/components/animal-persona-modal"
 import { PERSONAS, type PersonaData } from "@/lib/persona-data"
 
 type ViewState = "path-selection" | "input-form" | "result" | "quiz" | "payment"
@@ -18,6 +19,8 @@ export default function Home() {
   const [formData, setFormData] = useState<UserFormData | null>(null)
   // Persona is only used for SNS path
   const [selectedPersona, setSelectedPersona] = useState<PersonaData | null>(null)
+  // Modal state for SNS persona reveal
+  const [showPersonaModal, setShowPersonaModal] = useState(false)
 
   const handleSelectPath = (path: "sns" | "direct") => {
     setSelectedPath(path)
@@ -26,6 +29,18 @@ export default function Home() {
 
   const handleFormSubmit = (data: UserFormData) => {
     setFormData(data)
+    
+    // For SNS path with persona selected, show the modal first
+    if (data.path === "sns" && selectedPersona) {
+      setShowPersonaModal(true)
+    } else {
+      // For direct path or SNS without persona, go directly to result
+      setView("result")
+    }
+  }
+
+  const handlePersonaModalConfirm = () => {
+    setShowPersonaModal(false)
     setView("result")
   }
 
@@ -126,6 +141,14 @@ export default function Home() {
           onSelectPersona={handlePersonaSelect}
         />
       )}
+
+      {/* Animal Persona Modal - shows before result page for SNS path */}
+      <AnimalPersonaModal
+        isOpen={showPersonaModal}
+        onClose={() => setShowPersonaModal(false)}
+        onConfirm={handlePersonaModalConfirm}
+        persona={selectedPersona}
+      />
     </div>
   )
 }
