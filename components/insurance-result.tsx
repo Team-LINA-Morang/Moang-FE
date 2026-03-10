@@ -7,7 +7,6 @@ import type { UserFormData } from "@/components/input-form"
 import { InsuranceCard } from "@/components/insurance-card"
 import { ModuleBuilder } from "@/components/module-builder"
 import { PersonalizedGuide } from "@/components/personalized-guide"
-import { AnimalAnalysis } from "@/components/animal-analysis"
 import type { PersonaData } from "@/lib/persona-data"
 
 interface InsuranceResultProps {
@@ -154,11 +153,6 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
           <ModuleBuilder persona={persona} onTotalChange={setCustomTotal} />
           
           <PersonalizedGuide formData={formData} persona={persona} />
-          
-          {/* Animal Analysis Section - Only show for SNS path with persona */}
-          {formData.path === "sns" && persona && (
-            <AnimalAnalysis persona={persona} />
-          )}
 
           {/* Apply Button */}
           <button
