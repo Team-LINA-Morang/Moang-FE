@@ -107,28 +107,6 @@ export function ModuleBuilder({ persona, onTotalChange }: ModuleBuilderProps) {
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="flex flex-col gap-6"
     >
-      {/* Total Price Display */}
-      <div 
-        className="rounded-2xl p-5 sm:p-6"
-        style={{ backgroundColor: "#1a1a6e" }}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-white" />
-            <span className="text-sm font-medium text-white/80">{"예상 1일 보험료"}</span>
-          </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-white sm:text-3xl">
-              <AnimatedPrice value={totalPrice} />
-            </span>
-            <span className="text-sm font-medium text-white/80">{"원"}</span>
-          </div>
-        </div>
-        <p className="mt-2 text-xs text-white/60">
-          {"모듈을 자유롭게 추가/제거하여 나만의 보험을 설계하세요"}
-        </p>
-      </div>
-
       {/* Selected Modules - My Coverage */}
       <div 
         className="rounded-2xl bg-card p-5 shadow-sm sm:p-6"
