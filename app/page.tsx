@@ -114,6 +114,7 @@ export default function Home() {
           <PaymentSection
             onComplete={handlePaymentComplete}
             onBack={handleBackToResult}
+            insurancePeriod={formData?.insurancePeriod}
           />
         )}
       </main>
