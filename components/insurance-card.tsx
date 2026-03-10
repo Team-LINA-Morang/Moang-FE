@@ -7,6 +7,7 @@ import type { PersonaData, DEFAULT_DIRECT_PRODUCT } from "@/lib/persona-data"
 interface InsuranceCardProps {
   persona?: PersonaData | null
   customTotal?: number
+  insurancePeriod?: string
 }
 
 const defaultProduct = {
@@ -15,9 +16,10 @@ const defaultProduct = {
   price: "1,250",
 }
 
-export function InsuranceCard({ persona, customTotal }: InsuranceCardProps) {
+export function InsuranceCard({ persona, customTotal, insurancePeriod }: InsuranceCardProps) {
   const product = persona?.product || defaultProduct
   const displayPrice = customTotal ? customTotal.toLocaleString() : product.price
+  const periodText = insurancePeriod || "1일"
 
   return (
     <motion.div
@@ -40,7 +42,7 @@ export function InsuranceCard({ persona, customTotal }: InsuranceCardProps) {
             {"AI 맞춤 설계"}
           </span>
           <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            {"원데이"}
+            {periodText}
           </span>
           {persona && (
             <span 
@@ -88,7 +90,7 @@ export function InsuranceCard({ persona, customTotal }: InsuranceCardProps) {
           style={{ backgroundColor: "rgba(26, 26, 110, 0.04)" }}
         >
           <p className="mb-1 text-xs font-medium text-muted-foreground">
-            {"총 보험료"}
+            {`예상 ${periodText} 보험료`}
           </p>
           <div className="flex items-baseline gap-1">
             <motion.span
@@ -109,7 +111,7 @@ export function InsuranceCard({ persona, customTotal }: InsuranceCardProps) {
             </span>
           </div>
           <p className="mt-1.5 text-xs text-muted-foreground">
-            {"1일 기준 / 부가세 포함"}
+            {`${periodText} 기준 / 부가세 포함`}
           </p>
         </div>
       </div>
