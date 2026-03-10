@@ -25,9 +25,11 @@ const banks = [
 interface PaymentSectionProps {
   onComplete: () => void
   onBack: () => void
+  insurancePeriod?: string
 }
 
-export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
+export function PaymentSection({ onComplete, onBack, insurancePeriod }: PaymentSectionProps) {
+  const periodText = insurancePeriod || "1일"
   const [selectedBank, setSelectedBank] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
@@ -132,7 +134,7 @@ export function PaymentSection({ onComplete, onBack }: PaymentSectionProps) {
                   <p className="font-semibold text-foreground">
                     {"[AI 맞춤] 원데이 안심 보험"}
                   </p>
-                  <p className="text-xs text-muted-foreground">{"1일 기준"}</p>
+                  <p className="text-xs text-muted-foreground">{`${periodText} 기준`}</p>
                 </div>
               </div>
               <div className="text-right">
