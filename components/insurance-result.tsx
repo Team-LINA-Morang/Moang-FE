@@ -148,7 +148,7 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-6"
         >
-          <InsuranceCard persona={persona} customTotal={customTotal} />
+          <InsuranceCard persona={persona} customTotal={customTotal} insurancePeriod={formData.insurancePeriod} />
           
           {/* Module Builder - Replaces CoverageModules */}
           <ModuleBuilder persona={persona} onTotalChange={setCustomTotal} />

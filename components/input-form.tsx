@@ -16,8 +16,8 @@ export interface UserFormData {
   name: string
   birthDate: string
   gender: "male" | "female"
-  phone: string
-  email: string
+  occupation: string
+  insurancePeriod: string
   customRequest: string
   snsId?: string
   snsPlatform?: SnsPlatform
@@ -49,8 +49,8 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
   const [name, setName] = useState("")
   const [birthDate, setBirthDate] = useState("")
   const [gender, setGender] = useState<"male" | "female">("male")
-  const [phone, setPhone] = useState("")
-  const [email, setEmail] = useState("")
+  const [occupation, setOccupation] = useState("")
+  const [insurancePeriod, setInsurancePeriod] = useState("")
   const [customRequest, setCustomRequest] = useState("")
   const [snsPlatform, setSnsPlatform] = useState<SnsPlatform>("instagram")
   const [snsId, setSnsId] = useState("")
@@ -59,13 +59,8 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleBirthDateChange = (value: string) => {
-    const numeric = value.replace(/\D/g, "").slice(0, 6)
+    const numeric = value.replace(/\D/g, "").slice(0, 8)
     setBirthDate(numeric)
-  }
-
-  const handlePhoneChange = (value: string) => {
-    const numeric = value.replace(/\D/g, "").slice(0, 11)
-    setPhone(numeric)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,8 +87,8 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
       name,
       birthDate,
       gender,
-      phone,
-      email,
+      occupation,
+      insurancePeriod,
       customRequest,
       snsId: path === "sns" ? snsId : undefined,
       snsPlatform: path === "sns" ? snsPlatform : undefined,
@@ -141,13 +136,13 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
             {/* Birth Date */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="birthdate" className="text-xs font-medium text-muted-foreground">
-                {"생년월일 (6자리)"}
+                {"생년월일 (8자리)"}
               </label>
               <input
                 id="birthdate"
                 type="text"
                 inputMode="numeric"
-                placeholder="001125"
+                placeholder="20001125"
                 value={birthDate}
                 onChange={(e) => handleBirthDateChange(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -193,33 +188,32 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
               </div>
             </div>
 
-            {/* Phone */}
+            {/* Occupation */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="phone" className="text-xs font-medium text-muted-foreground">
-                {"핸드폰 번호"}
+              <label htmlFor="occupation" className="text-xs font-medium text-muted-foreground">
+                {"직업"}
               </label>
               <input
-                id="phone"
-                type="tel"
-                inputMode="numeric"
-                placeholder="01012345678"
-                value={phone}
-                onChange={(e) => handlePhoneChange(e.target.value)}
+                id="occupation"
+                type="text"
+                placeholder="직업을 입력해주세요"
+                value={occupation}
+                onChange={(e) => setOccupation(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
               />
             </div>
 
-            {/* Email */}
+            {/* Insurance Period */}
             <div className="flex flex-col gap-1.5 md:col-span-2">
-              <label htmlFor="email" className="text-xs font-medium text-muted-foreground">
-                {"이메일"}
+              <label htmlFor="insurancePeriod" className="text-xs font-medium text-muted-foreground">
+                {"보험 기간"}
               </label>
               <input
-                id="email"
-                type="email"
-                placeholder="example@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="insurancePeriod"
+                type="text"
+                placeholder="예: 3일, 1주일, 1개월"
+                value={insurancePeriod}
+                onChange={(e) => setInsurancePeriod(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
               />
             </div>
