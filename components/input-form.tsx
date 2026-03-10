@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { CheckCircle2, Circle, ArrowLeft, Upload, X, Image as ImageIcon, Instagram } from "lucide-react"
+import { CheckCircle2, Circle, ArrowLeft, Upload, X, Image as ImageIcon, Instagram, Loader2 } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { triggerInsuranceInquiry, type FlowType } from "@/lib/api"
 
 export type SnsPlatform = "instagram" | "facebook" | "threads"
 
@@ -56,6 +57,7 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
   const [snsId, setSnsId] = useState("")
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleBirthDateChange = (value: string) => {
@@ -82,19 +84,43 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleSubmit = () => {
-    onSubmit({
-      name,
-      birthDate,
-      gender,
-      occupation,
-      insurancePeriod,
-      customRequest,
-      snsId: path === "sns" ? snsId : undefined,
-      snsPlatform: path === "sns" ? snsPlatform : undefined,
-      imageFiles: path === "direct" ? imageFiles : undefined,
-      path,
-    })
+  const handleSubmit = async () => {
+    // Prevent double submission
+    if (isLoading) return
+    
+    setIsLoading(true)
+    
+    // Determine flow type based on path
+    const flowType: FlowType = path === "sns" ? "SNS" : "DIRECT"
+    
+    try {
+      // Trigger API call to backend
+      const response = await triggerInsuranceInquiry(flowType)
+      
+      if (response.success) {
+        // API call successful - proceed with form submission
+        onSubmit({
+          name,
+          birthDate,
+          gender,
+          occupation,
+          insurancePeriod,
+          customRequest,
+          snsId: path === "sns" ? snsId : undefined,
+          snsPlatform: path === "sns" ? snsPlatform : undefined,
+          imageFiles: path === "direct" ? imageFiles : undefined,
+          path,
+        })
+      } else {
+        // API call failed - show error
+        alert(`보험 조회에 실패했습니다: ${response.message || "서버 연결 오류"}`)
+      }
+    } catch (error) {
+      console.error("[v0] Submit error:", error)
+      alert("보험 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -349,10 +375,18 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
         <button
           type="button"
           onClick={handleSubmit}
-          className="mt-6 flex h-14 w-full items-center justify-center rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90"
+          disabled={isLoading}
+          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
           style={{ backgroundColor: "#1a1a6e" }}
         >
-          {"보험 조회하기"}
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" />
+              {"조회 중..."}
+            </>
+          ) : (
+            "보험 조회하기"
+          )}
         </button>
       </div>
     </section>
