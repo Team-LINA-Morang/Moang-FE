@@ -27,7 +27,7 @@ export function AnimalPersonaModal({
   insurancePeriod,
 }: AnimalPersonaModalProps) {
   const [phase, setPhase] = useState<"loading" | "reveal">("loading")
-  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [startAnimation, setStartAnimation] = useState(false)
 
   // Use actual user name or fallback to persona name
   const displayName = userName || persona?.name || "고객"
@@ -37,26 +37,21 @@ export function AnimalPersonaModal({
   useEffect(() => {
     if (isOpen) {
       setPhase("loading")
-      setLoadingProgress(0)
+      setStartAnimation(false)
+      // Small delay to ensure the modal is rendered before starting animation
+      const startTimer = setTimeout(() => {
+        setStartAnimation(true)
+      }, 100)
+      // Transition to reveal phase after animation completes
+      const revealTimer = setTimeout(() => {
+        setPhase("reveal")
+      }, 2000) // 1.8s animation + 0.2s buffer
+      return () => {
+        clearTimeout(startTimer)
+        clearTimeout(revealTimer)
+      }
     }
   }, [isOpen])
-
-  // Loading animation - 1.5 seconds total
-  useEffect(() => {
-    if (isOpen && phase === "loading") {
-      const interval = setInterval(() => {
-        setLoadingProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval)
-            setTimeout(() => setPhase("reveal"), 300)
-            return 100
-          }
-          return prev + 2.5 // Completes in ~1.6 seconds (100/2.5 * 40ms)
-        })
-      }, 40)
-      return () => clearInterval(interval)
-    }
-  }, [isOpen, phase])
 
   if (!persona) return null
 
@@ -116,16 +111,26 @@ export function AnimalPersonaModal({
 
                 {/* Progress Bar */}
                 <div className="w-full">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ backgroundColor: "#1a1a6e", width: `${loadingProgress}%` }}
-                      transition={{ duration: 0.1 }}
+                      style={{ backgroundColor: "#1a1a6e" }}
+                      initial={{ width: "0%" }}
+                      animate={{ width: startAnimation ? "100%" : "0%" }}
+                      transition={{ 
+                        duration: 1.8, 
+                        ease: "easeInOut",
+                      }}
                     />
                   </div>
-                  <p className="mt-2 text-center text-xs text-muted-foreground">
-                    {`${loadingProgress}%`}
-                  </p>
+                  <motion.p 
+                    className="mt-2 text-center text-sm font-medium text-muted-foreground"
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {"분석 중..."}
+                  </motion.p>
                 </div>
 
                 {/* Loading Indicator */}
