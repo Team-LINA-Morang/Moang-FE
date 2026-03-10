@@ -7,18 +7,18 @@ import { InputForm, type UserFormData } from "@/components/input-form"
 import { InsuranceResult } from "@/components/insurance-result"
 import { ComplianceQuiz } from "@/components/compliance-quiz"
 import { PaymentSection } from "@/components/payment-section"
-import { PersonaSelector } from "@/components/persona-selector"
 import { AnimalPersonaModal } from "@/components/animal-persona-modal"
-import { PERSONAS, type PersonaData } from "@/lib/persona-data"
+import { PERSONAS } from "@/lib/persona-data"
 
 type ViewState = "path-selection" | "input-form" | "result" | "quiz" | "payment"
+
+// Default persona for SNS path demonstration (봉재우 - 민첩한 다람쥐)
+const DEFAULT_SNS_PERSONA = PERSONAS.find(p => p.id === "bong-jaewoo") || PERSONAS[0]
 
 export default function Home() {
   const [view, setView] = useState<ViewState>("path-selection")
   const [selectedPath, setSelectedPath] = useState<"sns" | "direct" | null>(null)
   const [formData, setFormData] = useState<UserFormData | null>(null)
-  // Persona is only used for SNS path
-  const [selectedPersona, setSelectedPersona] = useState<PersonaData | null>(null)
   // Modal state for SNS persona reveal
   const [showPersonaModal, setShowPersonaModal] = useState(false)
 
@@ -30,11 +30,11 @@ export default function Home() {
   const handleFormSubmit = (data: UserFormData) => {
     setFormData(data)
     
-    // For SNS path with persona selected, show the modal first
-    if (data.path === "sns" && selectedPersona) {
+    // For SNS path, show the animal persona modal first
+    if (data.path === "sns") {
       setShowPersonaModal(true)
     } else {
-      // For direct path or SNS without persona, go directly to result
+      // For direct path, go directly to result
       setView("result")
     }
   }
@@ -57,7 +57,6 @@ export default function Home() {
     setView("path-selection")
     setSelectedPath(null)
     setFormData(null)
-    setSelectedPersona(null)
   }
 
   const handleBackToPath = () => {
@@ -73,34 +72,15 @@ export default function Home() {
     setView("result")
   }
 
-  // Persona selection only affects SNS path - does NOT auto-navigate
-  const handlePersonaSelect = (personaId: string) => {
-    const persona = PERSONAS.find(p => p.id === personaId) || null
-    setSelectedPersona(persona)
-    
-    // If we're in result view with SNS path, update form data with persona info
-    if (persona && view === "result" && selectedPath === "sns" && formData) {
-      setFormData({
-        ...formData,
-        name: persona.name,
-        snsId: persona.id,
-        snsPlatform: "instagram",
-      })
-    }
-  }
-
   // Determine which persona to use for the result
-  // - SNS path: use selectedPersona (can be null for default)
-  // - Direct path: always null (uses fixed bungee jump example)
-  const resultPersona = selectedPath === "sns" ? selectedPersona : null
-
-  // Show persona selector only in path-selection and result views for SNS path
-  const showPersonaSelector = view === "path-selection" || (view === "result" && selectedPath === "sns")
+  // - SNS path: use fixed default persona (봉재우)
+  // - Direct path: null (uses fixed bungee jump example)
+  const resultPersona = selectedPath === "sns" ? DEFAULT_SNS_PERSONA : null
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <main className={`flex-1 ${showPersonaSelector ? "pb-24" : ""}`}>
+      <main className="flex-1">
         {view === "path-selection" && (
           <PathSelection onSelectPath={handleSelectPath} />
         )}
@@ -134,20 +114,14 @@ export default function Home() {
         )}
       </main>
 
-      {/* Persona Selector at bottom - only for SNS path context */}
-      {showPersonaSelector && (
-        <PersonaSelector
-          selectedPersonaId={selectedPersona?.id || null}
-          onSelectPersona={handlePersonaSelect}
-        />
-      )}
-
       {/* Animal Persona Modal - shows before result page for SNS path */}
       <AnimalPersonaModal
         isOpen={showPersonaModal}
         onClose={() => setShowPersonaModal(false)}
         onConfirm={handlePersonaModalConfirm}
-        persona={selectedPersona}
+        persona={DEFAULT_SNS_PERSONA}
+        userName={formData?.name}
+        insurancePeriod={formData?.insurancePeriod}
       />
     </div>
   )
