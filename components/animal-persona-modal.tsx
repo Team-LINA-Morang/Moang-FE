@@ -14,36 +14,44 @@ interface AnimalPersonaModalProps {
   onClose: () => void
   onConfirm: () => void
   persona: PersonaData | null
+  userName?: string
+  insurancePeriod?: string
 }
 
-export function AnimalPersonaModal({ isOpen, onClose, onConfirm, persona }: AnimalPersonaModalProps) {
+export function AnimalPersonaModal({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  persona,
+  userName,
+  insurancePeriod,
+}: AnimalPersonaModalProps) {
   const [phase, setPhase] = useState<"loading" | "reveal">("loading")
-  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [startAnimation, setStartAnimation] = useState(false)
+
+  // Use actual user name or fallback to persona name
+  const displayName = userName || persona?.name || "고객"
+  const periodText = insurancePeriod || "1일"
 
   // Reset phase when modal opens
   useEffect(() => {
     if (isOpen) {
       setPhase("loading")
-      setLoadingProgress(0)
+      setStartAnimation(false)
+      // Small delay to ensure the modal is rendered before starting animation
+      const startTimer = setTimeout(() => {
+        setStartAnimation(true)
+      }, 100)
+      // Transition to reveal phase after animation completes
+      const revealTimer = setTimeout(() => {
+        setPhase("reveal")
+      }, 2000) // 1.8s animation + 0.2s buffer
+      return () => {
+        clearTimeout(startTimer)
+        clearTimeout(revealTimer)
+      }
     }
   }, [isOpen])
-
-  // Loading animation
-  useEffect(() => {
-    if (isOpen && phase === "loading") {
-      const interval = setInterval(() => {
-        setLoadingProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(interval)
-            setTimeout(() => setPhase("reveal"), 300)
-            return 100
-          }
-          return prev + 2
-        })
-      }, 40)
-      return () => clearInterval(interval)
-    }
-  }, [isOpen, phase])
 
   if (!persona) return null
 
@@ -88,10 +96,13 @@ export function AnimalPersonaModal({ isOpen, onClose, onConfirm, persona }: Anim
                   </motion.div>
                 </div>
 
-                {/* Loading Text */}
+                {/* Loading Text with User's Name */}
                 <div className="text-center">
                   <h3 className="text-lg font-bold text-foreground">
-                    {"사용자의 SNS를 분석 중입니다..."}
+                    {`${displayName}님의 SNS 피드를`}
+                  </h3>
+                  <h3 className="text-lg font-bold text-foreground">
+                    {"실시간 분석 중입니다..."}
                   </h3>
                   <p className="mt-1.5 text-sm text-muted-foreground">
                     {"AI가 피드 패턴을 분석하고 있어요"}
@@ -100,16 +111,26 @@ export function AnimalPersonaModal({ isOpen, onClose, onConfirm, persona }: Anim
 
                 {/* Progress Bar */}
                 <div className="w-full">
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
                     <motion.div
                       className="h-full rounded-full"
-                      style={{ backgroundColor: "#1a1a6e", width: `${loadingProgress}%` }}
-                      transition={{ duration: 0.1 }}
+                      style={{ backgroundColor: "#1a1a6e" }}
+                      initial={{ width: "0%" }}
+                      animate={{ width: startAnimation ? "100%" : "0%" }}
+                      transition={{ 
+                        duration: 1.8, 
+                        ease: "easeInOut",
+                      }}
                     />
                   </div>
-                  <p className="mt-2 text-center text-xs text-muted-foreground">
-                    {`${loadingProgress}%`}
-                  </p>
+                  <motion.p 
+                    className="mt-2 text-center text-sm font-medium text-muted-foreground"
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {"분석 중..."}
+                  </motion.p>
                 </div>
 
                 {/* Loading Indicator */}
@@ -156,8 +177,20 @@ export function AnimalPersonaModal({ isOpen, onClose, onConfirm, persona }: Anim
                   transition={{ delay: 0.4 }}
                   className="mt-1 text-sm text-white/70"
                 >
-                  {`${persona.name}님의 SNS 피드를 분석했어요`}
+                  {`${displayName}님의 SNS 피드를 분석했어요`}
                 </motion.p>
+                {/* Insurance Period Badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1"
+                  style={{ backgroundColor: "rgba(212, 168, 67, 0.2)" }}
+                >
+                  <span className="text-xs font-medium text-white/90">
+                    {`${periodText} 맞춤 보험`}
+                  </span>
+                </motion.div>
               </div>
 
               {/* Animal Result Card */}
@@ -181,7 +214,7 @@ export function AnimalPersonaModal({ isOpen, onClose, onConfirm, persona }: Anim
                   </motion.div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-muted-foreground">
-                      {`${persona.name}님은`}
+                      {`${displayName}님은`}
                     </p>
                     <h4 className="text-lg font-bold" style={{ color: "#1a1a6e" }}>
                       {animal.title}
