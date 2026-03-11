@@ -26,7 +26,7 @@ export function PersonalizedGuide({ formData, persona }: PersonalizedGuideProps)
       return persona.aiAdvice
     }
     if (formData.path === "sns") {
-      return `${name}님의 SNS 피드를 분석한 결과, 액티브한 아웃도어 활동이 많으신 것으로 파악됩니다. 이에 맞춰 상해 및 골절 보장을 강화한 맞춤 보험을 설계했습니다.`
+      return `${name}님의 SNS 분석 결과, 야구 직관 및 영화관람 등 외부 활동 비중이 높으신 것으로 나타났습니다. 활동 반경이 넓으신 만큼 발생할 수 있는 리스크를 고려하여, 취미생활 중 벌어질 수 있는 상해와 관련 질병을 집중 보장하는 최적의 보험을 설계했습니다.`
     }
     return `${name}님, 요청하신 내용을 바탕으로 고객 니즈를 분석하여 가장 적합한 보험을 생성했습니다. ${formData.gender === "male" ? "남성" : "여성"} 기준으로 최적화되어 있습니다.`
   }
