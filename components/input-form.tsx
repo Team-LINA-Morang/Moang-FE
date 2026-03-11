@@ -149,7 +149,7 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
               <input
                 id="name"
                 type="text"
-                placeholder="홍길동"
+                placeholder="임별"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -165,7 +165,7 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
                 id="birthdate"
                 type="text"
                 inputMode="numeric"
-                placeholder="20001125"
+                placeholder="20010312"
                 value={birthDate}
                 onChange={(e) => handleBirthDateChange(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -285,7 +285,7 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
               <input
                 id="snsId"
                 type="text"
-                placeholder="아이디를 입력해주세요"
+                placeholder="아이디를 입력해주세요(예시: im_star)"
                 value={snsId}
                 onChange={(e) => setSnsId(e.target.value)}
                 className="h-12 rounded-lg border border-border bg-card px-4 text-base font-medium text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-ring focus:ring-2 focus:ring-ring/20"
@@ -320,49 +320,54 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
                 {"이미지 첨부 (선택)"}
               </span>
               <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleFileChange}
-                className="hidden"
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileChange}
+                  className="hidden"
               />
               <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex h-24 w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition-colors hover:border-[#1a1a6e] hover:bg-muted/50"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex h-24 w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition-colors hover:border-[#1a1a6e] hover:bg-muted/50"
               >
-                <Upload className="h-5 w-5" />
-                {"클릭하여 이미지 업로드"}
-              </button>
-              
-              {imagePreviews.length > 0 && (
-                <div className="mt-3 flex flex-wrap gap-3">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative">
-                      <div className="h-20 w-20 overflow-hidden rounded-lg border border-border">
-                        {preview ? (
-                          <img
-                            src={preview}
-                            alt={`업로드 이미지 ${index + 1}`}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-muted">
-                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
+                <div className="flex items-center gap-2">
+                  <Upload className="h-5 w-5"/>
+                  <span>클릭하여 이미지 업로드</span>
                 </div>
+                <span className="mt-1 text-xs">
+                  (ex, 번지점프 사진을 올리면 번지점프 높이에 따라서, 아래 물이나 절벽이 있는지에 따라서 보험을 다르게 추천해드려요!)
+                </span>
+              </button>
+
+              {imagePreviews.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <div className="h-20 w-20 overflow-hidden rounded-lg border border-border">
+                            {preview ? (
+                                <img
+                                    src={preview}
+                                    alt={`업로드 이미지 ${index + 1}`}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-muted">
+                                  <ImageIcon className="h-6 w-6 text-muted-foreground"/>
+                                </div>
+                            )}
+                          </div>
+                          <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-white"
+                          >
+                            <X className="h-3 w-3"/>
+                          </button>
+                        </div>
+                    ))}
+                  </div>
               )}
             </div>
           </div>
@@ -370,16 +375,16 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
 
         {/* CTA Button */}
         <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-          style={{ backgroundColor: "#1a1a6e" }}
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="mt-6 flex h-14 w-full items-center justify-center gap-2 rounded-lg text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+            style={{backgroundColor: "#1a1a6e"}}
         >
           {isLoading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              {"조회 중..."}
+              <>
+                <Loader2 className="h-5 w-5 animate-spin"/>
+                {"조회 중..."}
             </>
           ) : (
             "보험 조회하기"

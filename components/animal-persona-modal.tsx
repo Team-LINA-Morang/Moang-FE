@@ -31,7 +31,7 @@ export function AnimalPersonaModal({
 
   // Use actual user name or fallback to persona name
   const displayName = userName || persona?.name || "고객"
-  const periodText = insurancePeriod || "1일"
+  const periodText = insurancePeriod || "월납"
 
   // Reset phase when modal opens
   useEffect(() => {
