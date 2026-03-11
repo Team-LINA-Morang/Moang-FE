@@ -6,6 +6,7 @@ import { Sparkles, Heart, Camera, Quote, Search, Loader2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import type { PersonaData } from "@/lib/persona-data"
 
@@ -64,6 +65,7 @@ export function AnimalPersonaModal({
         showCloseButton={false}
         style={{ backgroundColor: "transparent" }}
       >
+        <DialogTitle className="sr-only">동물 페르소나 분석 결과</DialogTitle>  {/* 추가 */}
         <AnimatePresence mode="wait">
           {phase === "loading" ? (
             <motion.div
