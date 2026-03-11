@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ArrowLeft, CheckCircle2, XCircle, AlertTriangle } from "lucide-react"
+import path from "node:path";
 
 interface QuizItem {
   id: number
@@ -9,7 +10,35 @@ interface QuizItem {
   correctAnswer: boolean
 }
 
-const QUIZ_ITEMS: QuizItem[] = [
+const QUIZ_ITEMS_SNS: QuizItem[] = [
+  {
+    id: 1,
+    question: "SNS 분석 결과는 참고용이며, 실제 보장 내용은 약관이 우선함을 인지하셨나요?",
+    correctAnswer: true,
+  },
+  {
+    id: 2,
+    question: "음주 후 발생한 사고(야구장 음주 포함)는 보장되지 않음을 인지하셨나요?",
+    correctAnswer: true,
+  },
+  {
+    id: 3,
+    question: "번지점프, 래프팅 등 익스트림 액티비티는 별도 특약 가입이 필요함을 확인하셨나요?",
+    correctAnswer: true,
+  },
+  {
+    id: 4,
+    question: "보험금 청구 시 사고 현장 사진, 진단서 등 증빙 서류가 필요함을 인지하셨나요?",
+    correctAnswer: true,
+  },
+  {
+    id: 5,
+    question: "본 보험의 보장 기간과 보장 내용을 충분히 이해하셨나요?",
+    correctAnswer: true,
+  },
+]
+
+const QUIZ_ITEMS_DIRECT: QuizItem[] = [
   {
     id: 1,
     question: "음주 후 발생한 사고는 보장되지 않음을 인지하셨나요?",
@@ -38,11 +67,13 @@ const QUIZ_ITEMS: QuizItem[] = [
 ]
 
 interface ComplianceQuizProps {
+  path: "sns" | "direct"
   onComplete: () => void
   onBack: () => void
 }
 
 export function ComplianceQuiz({ onComplete, onBack }: ComplianceQuizProps) {
+  const QUIZ_ITEMS = path === "sns" ? QUIZ_ITEMS_SNS : QUIZ_ITEMS_DIRECT
   const [answers, setAnswers] = useState<Record<number, boolean | null>>({})
   const [submitted, setSubmitted] = useState(false)
   const [showError, setShowError] = useState(false)
@@ -84,7 +115,7 @@ export function ComplianceQuiz({ onComplete, onBack }: ComplianceQuizProps) {
             <CheckCircle2 className="h-10 w-10" style={{ color: "#2d8a4e" }} />
           </div>
           <h2 className="text-xl font-bold text-foreground">
-            {"축하합니다! 퀴즈를 모두 맞추셨습니다."}
+            {"축하합니다! 퀴즈를 모두 맞히셨습니다."}
           </h2>
           <p className="text-sm text-muted-foreground">
             {"잠시 후 결제 화면으로 이동합니다..."}

@@ -90,7 +90,7 @@ export function InsuranceCard({ persona, customTotal, insurancePeriod }: Insuran
           style={{ backgroundColor: "rgba(26, 26, 110, 0.04)" }}
         >
           <p className="mb-1 text-xs font-medium text-muted-foreground">
-            {`예상 ${periodText} 보험료`}
+            {persona ? "예상 월납 보험료" : "예상 1일 보험료"}
           </p>
           <div className="flex items-baseline gap-1">
             <motion.span
@@ -111,7 +111,7 @@ export function InsuranceCard({ persona, customTotal, insurancePeriod }: Insuran
             </span>
           </div>
           <p className="mt-1.5 text-xs text-muted-foreground">
-            {`${periodText} 기준 / 부가세 포함`}
+            {persona ? "월납 기준 / 부가세 포함" : "1일 기준 / 부가세 포함"}
           </p>
         </div>
       </div>

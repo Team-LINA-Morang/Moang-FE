@@ -21,6 +21,7 @@ export default function Home() {
   const [formData, setFormData] = useState<UserFormData | null>(null)
   // Modal state for SNS persona reveal
   const [showPersonaModal, setShowPersonaModal] = useState(false)
+  const [customTotal, setCustomTotal] = useState(0)
 
   const handleSelectPath = (path: "sns" | "direct") => {
     setSelectedPath(path)
@@ -97,19 +98,23 @@ export default function Home() {
             onBack={handleBackToForm}
             onApply={handleApply}
             persona={resultPersona}
+            onTotalChange={setCustomTotal}
           />
         )}
         {view === "quiz" && (
           <ComplianceQuiz
+            path={formData?.path ?? "direct"}
             onComplete={handleQuizComplete}
             onBack={handleBackToResult}
           />
         )}
         {view === "payment" && (
           <PaymentSection
+            path={formData?.path ?? "direct"}
             onComplete={handlePaymentComplete}
             onBack={handleBackToResult}
             insurancePeriod={formData?.insurancePeriod}
+            customTotal={customTotal}
           />
         )}
       </main>

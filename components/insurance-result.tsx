@@ -14,15 +14,22 @@ interface InsuranceResultProps {
   onBack: () => void
   onApply: () => void
   persona?: PersonaData | null
+  onTotalChange?: (total: number) => void
 }
 
-const LOADING_STEPS = [
-  "입력 문맥 분석 중...",
-  "위험 요율 DB 매칭 중...",
-  "최적 보장 모듈 조립 중...",
+const LOADING_STEPS_SNS = [
+  "SNS 피드를 분석하는 중...",
+  "일상 속 위험 신호를 탐색하는 중...",
+  "맞춤 보험을 설계하는 중...",
 ]
 
-export function InsuranceResult({ formData, onBack, onApply, persona }: InsuranceResultProps) {
+const LOADING_STEPS_DIRECT = [
+  "요청하신 내용을 분석하는 중...",
+  "고객의 니즈에 맞는 보험 상품 생성 중...",
+  "맞춤 보험을 설계하는 중...",
+]
+
+export function InsuranceResult({ formData, onBack, onApply, persona, onTotalChange }: InsuranceResultProps) {
   const [loadingStep, setLoadingStep] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [customTotal, setCustomTotal] = useState(0)
@@ -34,6 +41,7 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
   }, [persona?.id])
 
   useEffect(() => {
+    const LOADING_STEPS = formData.path === "sns" ? LOADING_STEPS_SNS : LOADING_STEPS_DIRECT
     if (loadingStep < LOADING_STEPS.length) {
       const timer = setTimeout(() => {
         setLoadingStep((prev) => prev + 1)
@@ -48,6 +56,7 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
   }, [loadingStep])
 
   if (isLoading) {
+    const LOADING_STEPS = formData.path === "sns" ? LOADING_STEPS_SNS : LOADING_STEPS_DIRECT
     return (
       <section className="mx-auto w-full max-w-4xl px-4 py-16">
         <div className="flex flex-col items-center gap-10">
@@ -150,7 +159,12 @@ export function InsuranceResult({ formData, onBack, onApply, persona }: Insuranc
           <InsuranceCard persona={persona} customTotal={customTotal} insurancePeriod={formData.insurancePeriod} />
           
           {/* Module Builder - Replaces CoverageModules */}
-          <ModuleBuilder persona={persona} onTotalChange={setCustomTotal} />
+          <ModuleBuilder
+              persona={persona}
+              onTotalChange={(total) => {
+              setCustomTotal(total)
+              onTotalChange?.(total)  // 추가
+          }}  />
           
           <PersonalizedGuide formData={formData} persona={persona} />
 

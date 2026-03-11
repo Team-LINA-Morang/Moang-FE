@@ -23,17 +23,23 @@ const banks = [
 ]
 
 interface PaymentSectionProps {
+  path: "sns" | "direct"  // 추가
   onComplete: () => void
   onBack: () => void
   insurancePeriod?: string
+  customTotal?: number
 }
 
-export function PaymentSection({ onComplete, onBack, insurancePeriod }: PaymentSectionProps) {
+export function PaymentSection({ path, onComplete, onBack, insurancePeriod, customTotal  }: PaymentSectionProps) {
   const periodText = insurancePeriod || "1일"
   const [selectedBank, setSelectedBank] = useState("")
   const [accountNumber, setAccountNumber] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [isComplete, setIsComplete] = useState(false)
+
+  const insuranceName = path === "sns"
+      ? "[AI 맞춤] SNS 라이프스타일 안심 보험"
+      : "[AI 맞춤] 원데이 안심 보험"
 
   const handleAccountChange = (value: string) => {
     const numeric = value.replace(/\D/g, "").slice(0, 16)
@@ -102,7 +108,7 @@ export function PaymentSection({ onComplete, onBack, insurancePeriod }: PaymentS
           <CheckCircle2 className="h-6 w-6 shrink-0" style={{ color: "#2d8a4e" }} />
           <div>
             <p className="font-semibold text-foreground">
-              {"축하합니다! 퀴즈를 모두 맞추셨습니다."}
+              {"축하합니다! 퀴즈를 모두 맞히셨습니다."}
             </p>
             <p className="mt-0.5 text-sm text-muted-foreground">
               {"이제 결제를 진행해 주세요."}
@@ -132,14 +138,14 @@ export function PaymentSection({ onComplete, onBack, insurancePeriod }: PaymentS
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">
-                    {"[AI 맞춤] 원데이 안심 보험"}
+                    {insuranceName}
                   </p>
                   <p className="text-xs text-muted-foreground">{`${periodText} 기준`}</p>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-xl font-bold" style={{ color: "#1a1a6e" }}>
-                  {"1,250원"}
+                  {customTotal ? `${customTotal.toLocaleString()}원` : "1,250원"}
                 </p>
               </div>
             </div>
