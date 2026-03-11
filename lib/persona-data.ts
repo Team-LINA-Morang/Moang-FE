@@ -127,7 +127,7 @@ export const BONG_JAEWOO_RECOMMENDED: CoverageModule[] = [
     },
   },
   {
-    name: "장시간착석혈전증",
+    name: "장시간착석혈전증입원",
     amount: "100만원",
     description: "심부정맥혈전증(DVT) 진단 시 보장",
     price: 500,
@@ -138,7 +138,7 @@ export const BONG_JAEWOO_RECOMMENDED: CoverageModule[] = [
     },
   },
   {
-    name: "다중이용시설상해",
+    name: "다중이용시설상해입원",
     amount: "10만원",
     description: "다중이용시설 내 상해 입원비 보장",
     price: 100,
@@ -571,7 +571,9 @@ export const PERSONAS: PersonaData[] = [
       description: "야구장 내 상해와 열사병은 물론, 외부 활동 중 타인에 대한 배상책임까지 꼼꼼하게 보장합니다.",
       price: "1,850",
     },
-    aiAdvice: "SNS 분석 결과, 야구 직관 및 여행 등 외부 활동 비중이 높으신 것으로 나타났습니다. 활동 반경이 넓으신 만큼 발생할 수 있는 리스크를 고려하여, 다중이용시설(야구장) 상해와 해외 여행 중 사고를 집중 보장하는 최적의 보험을 설계했습니다.",
+    aiAdvice: "AI의 조언\n" +
+        "\n" +
+        "SNS 분석 결과, 야구 직관 및 영화관람 등 외부 활동 비중이 높으신 것으로 나타났습니다. 활동 반경이 넓으신 만큼 발생할 수 있는 리스크를 고려하여, 취미생활 중 벌어질 수 있는 상해와 관련 질병을 집중 보장하는 최적의 보험을 설계했습니다.",
   },
   {
     id: "han-jaewon",
@@ -854,7 +856,7 @@ export const PERSONAS: PersonaData[] = [
 // Default persona for "직접 보험 만들기" path
 export const DEFAULT_DIRECT_COVERAGES: CoverageModule[] = [
   {
-    name: "상해사망",
+    name: "번지점프사망",
     amount: "5,000만원",
     description: "번지점프 중 사고로 인한 사망 보장",
     price: 500,
