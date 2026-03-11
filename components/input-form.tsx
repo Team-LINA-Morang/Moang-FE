@@ -93,33 +93,30 @@ export function InputForm({ path, onSubmit, onBack }: InputFormProps) {
     // Determine flow type based on path
     const flowType: FlowType = path === "sns" ? "SNS" : "DIRECT"
     
+    // Prepare form data
+    const formData: UserFormData = {
+      name,
+      birthDate,
+      gender,
+      occupation,
+      insurancePeriod,
+      customRequest,
+      snsId: path === "sns" ? snsId : undefined,
+      snsPlatform: path === "sns" ? snsPlatform : undefined,
+      imageFiles: path === "direct" ? imageFiles : undefined,
+      path,
+    }
+    
     try {
-      // Trigger API call to backend
-      const response = await triggerInsuranceInquiry(flowType)
-      
-      if (response.success) {
-        // API call successful - proceed with form submission
-        onSubmit({
-          name,
-          birthDate,
-          gender,
-          occupation,
-          insurancePeriod,
-          customRequest,
-          snsId: path === "sns" ? snsId : undefined,
-          snsPlatform: path === "sns" ? snsPlatform : undefined,
-          imageFiles: path === "direct" ? imageFiles : undefined,
-          path,
-        })
-      } else {
-        // API call failed - show error
-        alert(`보험 조회에 실패했습니다: ${response.message || "서버 연결 오류"}`)
-      }
+      // Trigger API call to backend (fire and forget style - always proceed)
+      await triggerInsuranceInquiry(flowType)
     } catch (error) {
-      console.error("[v0] Submit error:", error)
-      alert("보험 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.")
+      // Log error but don't block the flow
+      console.error("API trigger failed, proceeding anyway:", error)
     } finally {
       setIsLoading(false)
+      // Always proceed to next page regardless of API result
+      onSubmit(formData)
     }
   }
 
